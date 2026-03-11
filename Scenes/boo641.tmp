@@ -1,0 +1,112 @@
+[gd_scene load_steps=4 format=3 uid="uid://qux2iu3iqrah"]
+
+[ext_resource type="Script" path="res://Scenes/book_logic.gd" id="1_rvqcm"]
+[ext_resource type="FontFile" uid="uid://4iweemwxdyyl" path="res://BigCat-main/fonts/JetBrainsMono-Bold.ttf" id="2_ghic4"]
+[ext_resource type="Script" path="res://Scenes/rich_text_label.gd" id="3_40ysi"]
+
+[node name="BookView" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_rvqcm")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+layout_direction = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -269.0
+offset_top = -306.0
+offset_right = 248.0
+offset_bottom = 221.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(258.5, 263.5)
+focus_mode = 2
+theme_override_constants/line_separation = 0
+theme_override_fonts/normal_font = ExtResource("2_ghic4")
+bbcode_enabled = true
+text = "................................................................................
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+................................................................................"
+autowrap_mode = 1
+selection_enabled = true
+script = ExtResource("3_40ysi")
+
+[node name="TextEdit" type="TextEdit" parent="."]
+layout_mode = 0
+offset_left = 43.0
+offset_top = 579.0
+offset_right = 246.0
+offset_bottom = 623.0
+
+[node name="TextEdit2" type="TextEdit" parent="."]
+layout_mode = 0
+offset_left = 307.0
+offset_top = 579.0
+offset_right = 507.0
+offset_bottom = 623.0
+
+[node name="TextEdit3" type="TextEdit" parent="."]
+layout_mode = 0
+offset_left = 558.0
+offset_top = 581.0
+offset_right = 747.0
+offset_bottom = 625.0
+
+[node name="TextEdit4" type="TextEdit" parent="."]
+layout_mode = 0
+offset_left = 824.0
+offset_top = 573.0
+offset_right = 1008.0
+offset_bottom = 617.0
+
+[connection signal="resized" from="RichTextLabel" to="RichTextLabel" method="_on_resized"]
+[connection signal="text_changed" from="TextEdit" to="." method="_on_text_edit_text_changed"]
+[connection signal="text_changed" from="TextEdit2" to="." method="_on_text_edit_2_text_changed"]
+[connection signal="text_changed" from="TextEdit3" to="." method="_on_text_edit_3_text_changed"]
+[connection signal="text_changed" from="TextEdit4" to="." method="_on_text_edit_4_text_changed"]
