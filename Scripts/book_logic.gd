@@ -23,6 +23,7 @@ const WORDS = 80
 
 
 func _ready() -> void:
+	math_proof()
 	regex.compile("[^0-9a-fA-F]")
 	refresh_text_box()
 
@@ -42,6 +43,7 @@ func refresh_text_box() -> void:
 
 func _thread_func() -> String:
 	return BabelMath.GetPageString(s_hexagon, s_wall, s_shelf, s_book, s_page)
+	return BabelMath.GetPageString(s_hexagon, s_wall, s_shelf, s_book, s_page)
 
 
 
@@ -49,6 +51,7 @@ func _process(_delta: float) -> void:
 	# Check if the thread has finished and update the UI accordingly
 	if thread.is_started() and not thread.is_alive():
 		var result = thread.wait_to_finish()
+		$RichTextLabel.text = "[left]" + result + "[/left]"
 		$RichTextLabel.text = "[left]" + result + "[/left]"
 		
 		end_time = Time.get_ticks_msec()
