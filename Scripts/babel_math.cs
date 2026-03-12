@@ -1,5 +1,7 @@
 using Godot;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 
@@ -19,7 +21,6 @@ public partial class babel_math : Node
 
     public static BigInteger GetPage(string hex, int wall, int shelf, int book, int page)
     {
-        // Convert book parameters to a single decimal value
         BigInteger page_value = BigInteger.Parse(hex, System.Globalization.NumberStyles.HexNumber);
         page_value = page_value * WALLS + wall;
         page_value = page_value * SHELVES + shelf;
@@ -32,12 +33,10 @@ public partial class babel_math : Node
 
     public static string DecToBase29(BigInteger page)
     {
-        // Map of characters for base 29 encoding (a-z, space, comma, period)
         string[] characters = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
         "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", " ", ",", "."};
         List<string> converted = new List<string>();
 
-        // Using do-while loop to ensure at least one iteration for the case when page is 0
         do
         {
             page = BigInteger.DivRem(page, 29, out BigInteger remainder);
