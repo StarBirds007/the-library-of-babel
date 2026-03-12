@@ -21,41 +21,55 @@ const WORDS = 80
 
 
 func _ready() -> void:
+	math_proof()
 	regex.compile("[^0-9a-fA-F]")
 	refresh_text_box()
 
 
-func get_page(hexagon: String, wall: int, shelf: int, book: int, page: int):
+func math_proof() -> void:
+	print("aaaaaaaaaaaaaaaaaaaaaaaaaa".length())
+	return
+	var num = 0
+	while (true):
+		await get_tree().create_timer(0.1).timeout
+		num += 1 
+		print("book: " + str(num) + ", title: " + str(num % 29) + ", leftover: " + str(num / 29))
 
-	var page_value = BigCat.BigNumber.from_hex(hexagon)
-	page_value = page_value.multiply_uint(WALLS).add_uint(wall)
-	page_value = page_value.multiply_uint(SHELVES).add_uint(shelf)
-	page_value = page_value.multiply_uint(BOOKS).add_uint(book)
-	page_value = page_value.multiply_uint(PAGES).add_uint(page)
-	print("Calculated page value: " + page_value.to_hex())
-	return page_value
+	pass
 
 
-func dec_to_base29(page) -> String:
-	var zero = BigCat.BigNumber.from_uint(0)
-	var base = BigCat.BigNumber.from_uint(29)
-	var characters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", \
-	"m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", " ", ",", "."]
-	var output = []
-	var remainder: int = 0
 
-	while page.is_greater_than(zero):
-		remainder = page.modulo(base).to_uint()
-		output.append(characters[remainder])
-		page = page.divide(base)
+# func get_page(hexagon: String, wall: int, shelf: int, book: int, page: int):
 
-	output.reverse()
-	output = "".join(output)
+# 	var page_value = BigCat.BigNumber.from_hex(hexagon)
+# 	page_value = page_value.multiply_uint(WALLS).add_uint(wall)
+# 	page_value = page_value.multiply_uint(SHELVES).add_uint(shelf)
+# 	page_value = page_value.multiply_uint(BOOKS).add_uint(book)
+# 	page_value = page_value.multiply_uint(PAGES).add_uint(page)
+# 	print("Calculated page value: " + page_value.to_hex())
+# 	return page_value
 
-	if output.length() < LINES * WORDS:
-		output = "a".repeat(LINES * WORDS - output.length()) + output
 
-	return output
+# func dec_to_base29(page) -> String:
+# 	var zero = BigCat.BigNumber.from_uint(0)
+# 	var base = BigCat.BigNumber.from_uint(29)
+# 	var characters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", \
+# 	"m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", " ", ",", "."]
+# 	var output = []
+# 	var remainder: int = 0
+
+# 	while page.is_greater_than(zero):
+# 		remainder = page.modulo(base).to_uint()
+# 		output.append(characters[remainder])
+# 		page = page.divide(base)
+
+# 	output.reverse()
+# 	output = "".join(output)
+
+# 	if output.length() < LINES * WORDS:
+# 		output = "a".repeat(LINES * WORDS - output.length()) + output
+
+# 	return output
 
 
 
@@ -72,14 +86,14 @@ func refresh_text_box() -> void:
 	
 
 func _thread_func() -> String:
-	return dec_to_base29((get_page(s_hexagon, s_wall, s_shelf, s_book, s_page)))
+	return BabelMath.GetPageString(s_hexagon, s_wall, s_shelf, s_book, s_page)
 
 
 
 func _process(_delta: float) -> void:
 	if thread.is_started() and not thread.is_alive():
 		var result = thread.wait_to_finish()
-		$RichTextLabel.text = "[center]" + result + "[/center]"
+		$RichTextLabel.text = "[left]" + result + "[/left]"
 		
 		end_time = Time.get_ticks_msec()
 		$Status.text = "Search completed in " + str((end_time - start_time) / 1000.0)\
