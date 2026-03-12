@@ -5,6 +5,7 @@ var thread: Thread = Thread.new()
 var start_time: int = 0
 var end_time: int = 0
 
+# Fixed constants for book parameters
 const WALLS = 4
 const SHELVES = 5
 const BOOKS = 32
@@ -12,6 +13,7 @@ const PAGES = 140
 const LINES = 40
 const WORDS = 80
 
+# Selected values for the hexagon, wall, shelf, book, and page
 @onready var s_hexagon: String = $Hex.text
 @onready var s_wall: int = $Wall.value
 @onready var s_shelf: int = $Shelf.value
@@ -25,39 +27,6 @@ func _ready() -> void:
 	refresh_text_box()
 
 
-func get_page(hexagon: String, wall: int, shelf: int, book: int, page: int):
-
-	var page_value = BigCat.BigNumber.from_hex(hexagon)
-	page_value = page_value.multiply_uint(WALLS).add_uint(wall)
-	page_value = page_value.multiply_uint(SHELVES).add_uint(shelf)
-	page_value = page_value.multiply_uint(BOOKS).add_uint(book)
-	page_value = page_value.multiply_uint(PAGES).add_uint(page)
-	print("Calculated page value: " + page_value.to_hex())
-	return page_value
-
-
-func dec_to_base29(page) -> String:
-	var zero = BigCat.BigNumber.from_uint(0)
-	var base = BigCat.BigNumber.from_uint(29)
-	var characters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", \
-	"m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", " ", ",", "."]
-	var output = []
-	var remainder: int = 0
-
-	while page.is_greater_than(zero):
-		remainder = page.modulo(base).to_uint()
-		output.append(characters[remainder])
-		page = page.divide(base)
-
-	output.reverse()
-	output = "".join(output)
-
-	if output.length() < LINES * WORDS:
-		output = "a".repeat(LINES * WORDS - output.length()) + output
-
-	return output
-
-
 
 func refresh_text_box() -> void:
 	if thread.is_started():
@@ -68,18 +37,19 @@ func refresh_text_box() -> void:
 	$Status.text = "Searching the library..."
 
 	thread.start(_thread_func)
-	
-	
+
+
 
 func _thread_func() -> String:
-	return dec_to_base29((get_page(s_hexagon, s_wall, s_shelf, s_book, s_page)))
+	return BabelMath.GetPageString(s_hexagon, s_wall, s_shelf, s_book, s_page)
 
 
 
 func _process(_delta: float) -> void:
+	# Check if the thread has finished and update the UI accordingly
 	if thread.is_started() and not thread.is_alive():
 		var result = thread.wait_to_finish()
-		$RichTextLabel.text = "[center]" + result + "[/center]"
+		$RichTextLabel.text = "[left]" + result + "[/left]"
 		
 		end_time = Time.get_ticks_msec()
 		$Status.text = "Search completed in " + str((end_time - start_time) / 1000.0)\
@@ -88,6 +58,7 @@ func _process(_delta: float) -> void:
 		$RefreshButton.disabled = false
 
 
+# Value changed handlers for the sliders and buttons
 
 func _on_page_value_changed(value:float) -> void:
 	var int_value = max(0, int(value))
