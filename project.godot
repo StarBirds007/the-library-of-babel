@@ -17,6 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+GlobalValues="*res://Scripts/global_values.gd"
 BabelMath="*res://Scripts/babel_math.cs"
 
 [display]

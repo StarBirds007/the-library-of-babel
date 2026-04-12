@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://qux2iu3iqrah"]
 
 [ext_resource type="Script" path="res://Scripts/book_logic.gd" id="1_rvqcm"]
-[ext_resource type="FontFile" uid="uid://4iweemwxdyyl" path="res://BigCat-main/fonts/JetBrainsMono-Bold.ttf" id="2_ghic4"]
+[ext_resource type="FontFile" uid="uid://dxsjq307w2kmu" path="res://Fonts/JetBrainsMono-Bold.ttf" id="2_cc5c5"]
 [ext_resource type="Script" path="res://Scripts/rich_text_label.gd" id="3_40ysi"]
 [ext_resource type="Script" path="res://Scripts/slider_label.gd" id="4_odb25"]
 
@@ -14,7 +14,8 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_rvqcm")
 
-[node name="RichTextLabel" type="RichTextLabel" parent="."]
+[node name="PageTextLabel" type="RichTextLabel" parent="."]
+clip_contents = false
 layout_direction = 1
 layout_mode = 1
 anchors_preset = 8
@@ -23,15 +24,16 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -240.0
-offset_top = -280.0
+offset_top = -285.0
 offset_right = 240.0
-offset_bottom = 280.0
+offset_bottom = 275.0
 grow_horizontal = 2
 grow_vertical = 2
+scale = Vector2(0.9, 0.9)
 pivot_offset = Vector2(240, 280)
 focus_mode = 2
 theme_override_constants/line_separation = 0
-theme_override_fonts/normal_font = ExtResource("2_ghic4")
+theme_override_fonts/normal_font = ExtResource("2_cc5c5")
 theme_override_font_sizes/normal_font_size = 10
 bbcode_enabled = true
 text = "................................................................................
@@ -78,6 +80,22 @@ autowrap_mode = 1
 selection_enabled = true
 script = ExtResource("3_40ysi")
 
+[node name="TitleTextLabel" type="RichTextLabel" parent="PageTextLabel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -233.5
+offset_top = -39.0
+offset_right = 233.5
+offset_bottom = -266.0
+pivot_offset = Vector2(233.5, 26.5)
+theme_override_fonts/normal_font = ExtResource("2_cc5c5")
+theme_override_font_sizes/normal_font_size = 19
+bbcode_enabled = true
+text = "333333333333333333333333333333"
+
 [node name="Page" type="HSlider" parent="."]
 layout_mode = 1
 anchors_preset = -1
@@ -88,7 +106,9 @@ offset_left = 72.0
 offset_top = -16.184
 offset_right = -333.0
 offset_bottom = -0.184021
+min_value = 1.0
 max_value = 140.0
+value = 1.0
 
 [node name="SliderLabel" type="Label" parent="Page"]
 layout_mode = 0
@@ -109,7 +129,9 @@ offset_left = 72.0
 offset_top = -68.0
 offset_right = -333.0
 offset_bottom = -52.0
+min_value = 1.0
 max_value = 32.0
+value = 1.0
 
 [node name="SliderLabel" type="Label" parent="Book"]
 layout_mode = 0
@@ -129,7 +151,9 @@ offset_left = 72.0
 offset_top = -127.0
 offset_right = -333.0
 offset_bottom = -111.0
+min_value = 1.0
 max_value = 5.0
+value = 1.0
 
 [node name="SliderLabel" type="Label" parent="Shelf"]
 layout_mode = 0
@@ -149,7 +173,9 @@ offset_left = 72.0
 offset_top = -180.0
 offset_right = -333.0
 offset_bottom = -164.0
+min_value = 1.0
 max_value = 4.0
+value = 1.0
 
 [node name="SliderLabel" type="Label" parent="Wall"]
 layout_mode = 0
@@ -206,8 +232,28 @@ offset_right = -536.0
 offset_bottom = -301.0
 metadata/_edit_use_anchors_ = true
 
-[connection signal="item_rect_changed" from="RichTextLabel" to="RichTextLabel" method="_on_item_rect_changed"]
-[connection signal="resized" from="RichTextLabel" to="RichTextLabel" method="_on_resized"]
+[node name="Next" type="Button" parent="."]
+layout_mode = 0
+offset_left = 626.0
+offset_top = 580.0
+offset_right = 726.0
+offset_bottom = 620.0
+pivot_offset = Vector2(50, 20)
+text = "Next"
+
+[node name="Previous" type="Button" parent="."]
+layout_mode = 0
+offset_left = 426.0
+offset_top = 580.0
+offset_right = 526.0
+offset_bottom = 620.0
+pivot_offset = Vector2(50, 20)
+text = "Previous"
+
+[connection signal="item_rect_changed" from="PageTextLabel" to="PageTextLabel" method="_on_item_rect_changed"]
+[connection signal="resized" from="PageTextLabel" to="PageTextLabel" method="_on_resized"]
+[connection signal="item_rect_changed" from="PageTextLabel/TitleTextLabel" to="PageTextLabel" method="_on_title_text_label_item_rect_changed"]
+[connection signal="resized" from="PageTextLabel/TitleTextLabel" to="PageTextLabel" method="_on_title_text_label_resized"]
 [connection signal="value_changed" from="Page" to="." method="_on_page_value_changed"]
 [connection signal="value_changed" from="Page" to="Page/SliderLabel" method="_on_page_value_changed"]
 [connection signal="value_changed" from="Book" to="." method="_on_book_value_changed"]
@@ -218,3 +264,5 @@ metadata/_edit_use_anchors_ = true
 [connection signal="value_changed" from="Wall" to="Wall/SliderLabel" method="_on_page_value_changed"]
 [connection signal="text_changed" from="Hex" to="." method="_on_hex_text_changed"]
 [connection signal="pressed" from="RefreshButton" to="." method="_on_refresh_button_pressed"]
+[connection signal="pressed" from="Next" to="." method="_on_next_pressed"]
+[connection signal="pressed" from="Previous" to="." method="_on_previous_pressed"]

@@ -4,6 +4,9 @@ var regex: RegEx = RegEx.new()
 var thread: Thread = Thread.new()
 var start_time: int = 0
 var end_time: int = 0
+var current_book: String = ""
+var current_title: String = ""
+var debug_time: float = 0.0
 
 const WALLS = 4
 const SHELVES = 5
@@ -12,64 +15,25 @@ const PAGES = 140
 const LINES = 40
 const WORDS = 80
 
+# Variables currently selected, used for display
 @onready var s_hexagon: String = $Hex.text
-@onready var s_wall: int = $Wall.value
-@onready var s_shelf: int = $Shelf.value
-@onready var s_book: int = $Book.value
-@onready var s_page: int = $Page.value
+@onready var s_wall: int = $Wall.value - 1
+@onready var s_shelf: int = $Shelf.value - 1
+@onready var s_book: int = $Book.value - 1
+@onready var s_page: int = $Page.value - 1
+
+# Variables that are active right now
+var hexagon: String = s_hexagon
+var wall: int = s_wall
+var shelf: int = s_shelf
+var book: int = s_book
+var page: int = s_page
 
 
 
 func _ready() -> void:
-	math_proof()
-	regex.compile("[^0-9a-fA-F]")
+	regex.compile("[^0-9a-z]")
 	refresh_text_box()
-
-
-func math_proof() -> void:
-	print("aaaaaaaaaaaaaaaaaaaaaaaaaa".length())
-	return
-	var num = 0
-	while (true):
-		await get_tree().create_timer(0.1).timeout
-		num += 1 
-		print("book: " + str(num) + ", title: " + str(num % 29) + ", leftover: " + str(num / 29))
-
-	pass
-
-
-
-# func get_page(hexagon: String, wall: int, shelf: int, book: int, page: int):
-
-# 	var page_value = BigCat.BigNumber.from_hex(hexagon)
-# 	page_value = page_value.multiply_uint(WALLS).add_uint(wall)
-# 	page_value = page_value.multiply_uint(SHELVES).add_uint(shelf)
-# 	page_value = page_value.multiply_uint(BOOKS).add_uint(book)
-# 	page_value = page_value.multiply_uint(PAGES).add_uint(page)
-# 	print("Calculated page value: " + page_value.to_hex())
-# 	return page_value
-
-
-# func dec_to_base29(page) -> String:
-# 	var zero = BigCat.BigNumber.from_uint(0)
-# 	var base = BigCat.BigNumber.from_uint(29)
-# 	var characters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", \
-# 	"m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", " ", ",", "."]
-# 	var output = []
-# 	var remainder: int = 0
-
-# 	while page.is_greater_than(zero):
-# 		remainder = page.modulo(base).to_uint()
-# 		output.append(characters[remainder])
-# 		page = page.divide(base)
-
-# 	output.reverse()
-# 	output = "".join(output)
-
-# 	if output.length() < LINES * WORDS:
-# 		output = "a".repeat(LINES * WORDS - output.length()) + output
-
-# 	return output
 
 
 
@@ -77,6 +41,11 @@ func refresh_text_box() -> void:
 	if thread.is_started():
 		return
 	
+	if s_hexagon == hexagon and s_wall == wall and s_shelf == shelf and s_book == book and s_page == page:
+		print("No changes detected, not refreshing.")
+		print_page()
+		return
+
 	start_time = Time.get_ticks_msec()
 	$RefreshButton.disabled = true
 	$Status.text = "Searching the library..."
@@ -85,7 +54,18 @@ func refresh_text_box() -> void:
 	
 	
 
-func _thread_func() -> String:
+func _thread_func() -> Dictionary:
+	print("Hex is " + str(s_hexagon.length()) + " characters long.\n")
+
+	# Update the active variables to match the selected ones
+	hexagon = s_hexagon
+	wall = s_wall
+	shelf = s_shelf
+	book = s_book
+	page = s_page
+
+	GlobalValues.debug_time = Time.get_ticks_msec()
+
 	return BabelMath.GetPageString(s_hexagon, s_wall, s_shelf, s_book, s_page)
 
 
@@ -93,41 +73,56 @@ func _thread_func() -> String:
 func _process(_delta: float) -> void:
 	if thread.is_started() and not thread.is_alive():
 		var result = thread.wait_to_finish()
-		$RichTextLabel.text = "[left]" + result + "[/left]"
-		
+
+		current_book = "[center]" + result["book"] + "[/center]"
+		current_title = "[center]" + result["title"] + "[/center]"
+
+		print_page()
+
 		end_time = Time.get_ticks_msec()
 		$Status.text = "Search completed in " + str((end_time - start_time) / 1000.0)\
 		 + " seconds."
-		
+
 		$RefreshButton.disabled = false
 
 
 
+func print_page() -> void:
+	$PageTextLabel.text = current_book
+	$PageTextLabel.get_child(0).text = current_title
+
+
+
+
+
+
+# Button and input handlers below. Not much to see here.
+
 func _on_page_value_changed(value:float) -> void:
 	var int_value = max(0, int(value))
 	if int_value <= PAGES:
-		s_page = int_value
+		s_page = int_value - 1
 	
 
 
 func _on_book_value_changed(value:float) -> void:
 	var int_value = max(0, int(value))
 	if int_value <= BOOKS:
-		s_book = int_value
+		s_book = int_value - 1
 		
 
 
 func _on_shelf_value_changed(value:float) -> void:
 	var int_value = max(0, int(value))
 	if int_value <= SHELVES:
-		s_shelf = int_value
+		s_shelf = int_value - 1
 		
 
 
 func _on_wall_value_changed(value:float) -> void:
 	var int_value = max(0, int(value))
 	if int_value <= WALLS:
-		s_wall = int_value
+		s_wall = int_value - 1
 		
 
 
@@ -146,4 +141,17 @@ func _on_hex_text_changed() -> void:
 
 
 func _on_refresh_button_pressed() -> void:
+	refresh_text_box()
+
+
+func _on_next_pressed() -> void:
+	s_page += 1
+	$Page.value = s_page + 1
+	refresh_text_box()
+
+
+
+func _on_previous_pressed() -> void:
+	s_page -= 1
+	$Page.value = s_page + 1
 	refresh_text_box()
