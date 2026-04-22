@@ -16,13 +16,16 @@ public partial class babel_math : Node
     private static string     cachedBookKey   = "";
     private static BigInteger cachedBookValue = BigInteger.Zero;
 
+    private static readonly Random Rng = new Random();
+
     private static readonly char[] Base29Characters = {
         'a','b','c','d','e','f','g','h','i','j','k','l','m',
         'n','o','p','q','r','s','t','u','v','w','x','y','z',
         ' ', ',', '.'
     };
-    private static int[] Base36Table = CreateBase36Table();
 
+    private static readonly int[] Base36Table = CreateBase36Table();
+    private static readonly int[] Base29Table = CreateBase29Table();
 
 
     private static int[] CreateBase36Table()
@@ -43,6 +46,18 @@ public partial class babel_math : Node
         return table;
     }
 
+    private static int[] CreateBase29Table()
+    {
+        int[] table = new int[128];
+        for (int i = 0; i < table.Length; i++)
+            table[i] = -1;
+
+        for (int i = 0; i < Base29Characters.Length; i++)
+            table[Base29Characters[i]] = i;
+
+        return table;
+    }
+
 
 
     public override void _Ready()
@@ -52,22 +67,23 @@ public partial class babel_math : Node
 
 
 
-    public static GDictionary GetPageString(string hex, int wall, int shelf, int book, int page)
+    // Public APIs
+
+    public static GDictionary GetPageAndTitleString(GDictionary address)
     {
         int pageSize  = (int)global_values.Get("LINES") * (int)global_values.Get("WORDS");
         int totalSize = pageSize * (int)global_values.Get("PAGES");
 
-        BigInteger bookValue = GetBook(hex, wall, shelf, book);
+        BigInteger bookValue = AddressToBookNumber(address);
+        BigInteger titleValue;
 
-        bookValue = BigInteger.DivRem(bookValue, BigInteger.Pow(29, (int)global_values.Get("TITLE")), out BigInteger remainder);
+        titleValue = ExtractRegion(bookValue, totalSize);
+        bookValue = ExtractRegion(bookValue, totalSize - ((int)address["page"] + 1) * pageSize);
 
-        int titleValue = (int)remainder;
+        string bookString  = BigIntegerToBase29(bookValue, pageSize);
+        string titleString = BigIntegerToBase29(titleValue);
 
-        GD.Print("Book value: " + bookValue);
-        GD.Print("Title value: " + titleValue);
-
-        string bookString = GetPageFromBookValue(bookValue, page, pageSize, totalSize);
-        string titleString = DecToBase29(titleValue);
+        BenchmarkTime("Extracted page and title.");
 
         return new GDictionary
         {
@@ -78,10 +94,164 @@ public partial class babel_math : Node
 
 
 
-    private static BigInteger GetBook(string hex, int wall, int shelf, int book)
+    public static GDictionary SearchEmptyPageRandomBook(string searchText)
+    {
+        int pageSize   = (int)global_values.Get("LINES") * (int)global_values.Get("WORDS");
+        int totalPages = (int)global_values.Get("PAGES");
+        int totalSize  = pageSize * totalPages;
+
+        // The search text must fit within one page. If it's too long, we can't
+        // place it — throw early with a clear message.
+        if (searchText.Length > pageSize)
+            throw new ArgumentException(
+                $"Search text is {searchText.Length} characters, " +
+                $"but a page is only {pageSize} characters.");
+
+        // Step 1: Create the required page string.
+        // We want:  [spaces][searchText][spaces]
+        int textLength = searchText.Length;
+        int maxLeftPad = pageSize - textLength;
+        int leftPad    = Rng.Next(0, maxLeftPad + 1);   // inclusive on both ends
+        int rightPad   = pageSize - textLength - leftPad;
+
+        // Build the page as a char array.
+        char[] pageChars = new char[pageSize];
+
+        for (int i = 0; i < leftPad; i++)
+            pageChars[i] = ' ';
+
+        for (int i = 0; i < textLength; i++)
+            pageChars[leftPad + i] = searchText[i];
+
+        for (int i = 0; i < rightPad; i++)
+            pageChars[leftPad + textLength + i] = ' ';
+
+        string pageString = new string(pageChars);
+
+        // Step 2: Convert the page string to a BigInteger.
+        BigInteger pageNumber = Base29ToBigInteger(pageString);
+
+        BenchmarkTime("Converted page text to BigInteger.");
+
+        // Step 3: Choose a random target page index.
+        int    targetPage      = Rng.Next(0, totalPages);
+        int    offsetFromRight = (totalPages - targetPage - 1) * pageSize;
+
+        // Step 4: Generate random noise for pages below the target.
+        BigInteger bottomNoise = BigInteger.Zero;
+        if (offsetFromRight > 0)
+        {
+            BigInteger bottomRange = BigInteger.Pow(29, offsetFromRight);
+            bottomNoise = RandomBigInteger(bottomRange);
+        }
+
+        BenchmarkTime("Generated bottom noise.");
+
+        // Step 5: Generate random noise for pages above the target.
+        int    pagesAbove  = targetPage;
+        int    topWidth    = pagesAbove * pageSize;  // in base-29 digits
+
+        BigInteger topNoise = BigInteger.Zero;
+        if (topWidth > 0)
+        {
+            BigInteger topRange = BigInteger.Pow(29, topWidth);
+            topNoise = RandomBigInteger(topRange);
+        }
+
+        BenchmarkTime("Generated top noise.");
+
+        // Step 6: Combine everything into a single book number.
+        // We add the numbers by multiplying them by the appropriate powers of 29 to shift them into place, then summing:
+        BigInteger pageShift = BigInteger.Pow(29, offsetFromRight);
+        BigInteger topShift  = BigInteger.Pow(29, offsetFromRight + pageSize);
+
+        BigInteger bookNumber = (topNoise * topShift)
+                              + (pageNumber * pageShift)
+                              + bottomNoise;
+
+        BenchmarkTime("Assembled book number.");
+
+        // Step 7: Convert the book number into an address.
+        GDictionary result = BookNumberToAddress(bookNumber);
+        result["page"] = targetPage;
+
+        BenchmarkTime("Converted book number to address.");
+
+        return result;
+    }
+
+
+
+    // Helper methods
+
+    private static BigInteger ExtractRegion(BigInteger value, int offsetFromRight)
+    {
+        BigInteger shifted = value / BigInteger.Pow(29, offsetFromRight);
+
+        return shifted;
+    }
+
+
+
+    private static BigInteger RandomBigInteger(BigInteger exclusiveMax)
+    {
+        if (exclusiveMax <= 0)
+            return BigInteger.Zero;
+
+        byte[] maxBytes = exclusiveMax.ToByteArray();
+        int    byteCount = maxBytes.Length;
+
+        // Fill with random bytes.
+        byte[] randomBytes = new byte[byteCount + 1];
+        Rng.NextBytes(randomBytes);
+        randomBytes[byteCount] = 0x00; // force positive
+
+        BigInteger result = new BigInteger(randomBytes);
+
+        // Clamp to [0, exclusiveMax).
+        return result % exclusiveMax;
+    }
+
+
+
+    // Core conversion methods
+
+    private static GDictionary BookNumberToAddress(BigInteger bookNumber)
+    {
+        int BOOKS   = (int)global_values.Get("BOOKS");
+        int SHELVES = (int)global_values.Get("SHELVES");
+        int WALLS   = (int)global_values.Get("WALLS");
+
+        bookNumber = BigInteger.DivRem(bookNumber, BOOKS,   out BigInteger bookRemainder);
+        bookNumber = BigInteger.DivRem(bookNumber, SHELVES, out BigInteger shelfRemainder);
+        bookNumber = BigInteger.DivRem(bookNumber, WALLS,   out BigInteger wallRemainder);
+
+        BigInteger hexValue = bookNumber;
+
+        int bookIndex  = (int)bookRemainder;
+        int shelfIndex = (int)shelfRemainder;
+        int wallIndex  = (int)wallRemainder;
+
+        string hexString = BigIntegerToBase36(hexValue);
+
+        BenchmarkTime("Unpacked address.");
+
+        return new GDictionary
+        {
+            {"hex", hexString},
+            {"wall", wallIndex},
+            {"shelf", shelfIndex},
+            {"book", bookIndex},
+            {"page", 0}
+        };
+    }
+
+
+
+    private static BigInteger AddressToBookNumber(GDictionary address)
     {
 
-        string bookKey = $"{hex}|{wall}|{shelf}|{book}";
+        string bookKey = $"{address["hex"]}|{address["wall"]}|{address["shelf"]}|{address["book"]}";
         if (bookKey == cachedBookKey)
         {
             BenchmarkTime("Book value retrieved from cache (skipped recalculation).");
@@ -89,22 +259,22 @@ public partial class babel_math : Node
         }
 
         BigInteger hexValue;
-        if (hex == cachedHex)
+        if ((string)address["hex"] == cachedHex)
         {
             hexValue = cachedHexValue;
             BenchmarkTime("Hex retrieved from cache (skipped re-parsing).");
         }
         else
         {
-            hexValue       = FromBase36(hex);
-            cachedHex      = hex;
+            hexValue       = Base36ToBigInteger((string)address["hex"]);
+            cachedHex      = (string)address["hex"];
             cachedHexValue = hexValue;
         }
 
         BigInteger bookValue = hexValue;
-        bookValue = bookValue * (int)global_values.Get("WALLS")   + wall;
-        bookValue = bookValue * (int)global_values.Get("SHELVES") + shelf;
-        bookValue = bookValue * (int)global_values.Get("BOOKS")   + book;
+        bookValue = bookValue * (int)global_values.Get("WALLS")   + (int)address["wall"];
+        bookValue = bookValue * (int)global_values.Get("SHELVES") + (int)address["shelf"];
+        bookValue = bookValue * (int)global_values.Get("BOOKS")   + (int)address["book"];
 
         cachedBookKey   = bookKey;
         cachedBookValue = bookValue;
@@ -116,7 +286,27 @@ public partial class babel_math : Node
 
 
 
-    private static BigInteger FromBase36(string value)
+    private static string BigIntegerToBase36(BigInteger value)
+    {
+        const string Base36Chars = "0123456789abcdefghijklmnopqrstuvwxyz";
+
+        if (value == BigInteger.Zero)
+            return "0";
+
+        List<char> digits = new List<char>();
+        while (value > 0)
+        {
+            value = BigInteger.DivRem(value, 36, out BigInteger remainder);
+            digits.Add(Base36Chars[(int)remainder]);
+        }
+
+        digits.Reverse();
+        return new string(digits.ToArray());
+    }
+
+
+
+    private static BigInteger Base36ToBigInteger(string value)
     {
         BigInteger result = 0;
 
@@ -139,21 +329,7 @@ public partial class babel_math : Node
 
 
 
-    private static string GetPageFromBookValue(BigInteger bookValue, int page, int pageSize, int totalSize)
-    {
-        int startFromRight = totalSize - (page + 1) * pageSize;
-
-        BigInteger shifted = bookValue / BigInteger.Pow(29, startFromRight);
-      
-        var result = DecToBase29(shifted, pageSize);
-
-        BenchmarkTime("Extracted page from book value.");
-
-        return new string(result);
-    }
-
-
-    private static string DecToBase29(BigInteger value, int stringLength = -1)
+    private static string BigIntegerToBase29(BigInteger value, int stringLength = -1)
     {
         if (stringLength != -1)
         {
@@ -179,6 +355,31 @@ public partial class babel_math : Node
         }
     }
 
+
+
+    private static BigInteger Base29ToBigInteger(string value)
+    {
+        BigInteger result = 0;
+        ReadOnlySpan<char> input = value.AsSpan();
+
+        foreach (char c in input)
+        {
+            int digit = Base29Table[c];
+
+            if (digit == -1)
+                throw new ArgumentException($"Invalid character '{c}' in base-29 string.");
+
+            result = result * 29 + digit;
+        }
+
+        BenchmarkTime("Converted from base-29.");
+
+        return result;
+    }
+
+
+
+    // Benchmarking
 
     private static void BenchmarkTime(string message)
     {

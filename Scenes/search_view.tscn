@@ -1,0 +1,38 @@
+[gd_scene load_steps=2 format=3 uid="uid://cxp3ecgp0ho6m"]
+
+[ext_resource type="Script" path="res://Scripts/search_view.gd" id="1_2ud3l"]
+
+[node name="SearchView" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_2ud3l")
+
+[node name="PageSearch" type="Button" parent="."]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 250.0
+offset_right = 244.0
+offset_bottom = 321.0
+text = "Search By Page"
+
+[node name="TitleSearch" type="Button" parent="."]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 333.0
+offset_right = 244.0
+offset_bottom = 404.0
+text = "Search By Title"
+
+[node name="TextEdit" type="TextEdit" parent="."]
+layout_mode = 0
+offset_left = 336.0
+offset_top = 39.0
+offset_right = 816.0
+offset_bottom = 599.0
+
+[connection signal="pressed" from="PageSearch" to="." method="_on_page_search_pressed"]
+[connection signal="text_changed" from="TextEdit" to="." method="_on_text_edit_text_changed"]

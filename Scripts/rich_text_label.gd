@@ -34,8 +34,6 @@ func _on_item_rect_changed() -> void:
 	adjust_size_from_font()
 	position.x = (get_parent().size.x / 2) - size.x / 2
 
-	# $TitleTextLabel.position.x = size.x / 2 - $TitleTextLabel.size.x / 2
-
 
 func _on_title_text_label_resized() -> void:
 	_on_resized()
