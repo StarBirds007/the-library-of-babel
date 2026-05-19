@@ -13,3 +13,17 @@ script = ExtResource("1_trg0q")
 
 [node name="SearchView" parent="BookUI" instance=ExtResource("2_piyd2")]
 visible = false
+
+[node name="Button" type="Button" parent="BookUI"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -178.0
+offset_top = 47.0
+offset_right = -42.0
+offset_bottom = 176.0
+grow_horizontal = 0
+text = "Switch Mode
+"
+
+[connection signal="pressed" from="BookUI/Button" to="BookUI" method="_on_button_pressed"]
