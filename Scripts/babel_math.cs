@@ -16,6 +16,8 @@ public partial class babel_math : Node
     private static string     cachedBookKey   = "";
     private static BigInteger cachedBookValue = BigInteger.Zero;
 
+    private static Dictionary<int, BigInteger> pow29Cache = new Dictionary<int, BigInteger>();
+
     private static readonly Random Rng = new Random();
 
     private static readonly char[] Base29Characters = {
@@ -63,6 +65,10 @@ public partial class babel_math : Node
     public override void _Ready()
     {
         global_values = GetNode("/root/GlobalValues");
+        // int i = 10;
+        // for (int i = 0; i < 100; i++)
+        //     GD.Print("Conversion Testing: " + BigIntegerToBase36(i, 448000));
+        
     }
 
 
@@ -129,7 +135,7 @@ public partial class babel_math : Node
         string pageString = new string(pageChars);
 
         // Step 2: Convert the page string to a BigInteger.
-        BigInteger pageNumber = Base29ToBigInteger(pageString);
+        BigInteger pageNumber = Base29ToBigInteger(pageString.AsSpan());
 
         BenchmarkTime("Converted page text to BigInteger.");
 
@@ -149,7 +155,7 @@ public partial class babel_math : Node
 
         // Step 5: Generate random noise for pages above the target.
         int    pagesAbove  = targetPage;
-        int    topWidth    = pagesAbove * pageSize;  // in base-29 digits
+        int    topWidth    = (pagesAbove * pageSize) + (int)global_values.Get("TITLE");  // in base-29 digits
 
         BigInteger topNoise = BigInteger.Zero;
         if (topWidth > 0)
@@ -214,6 +220,16 @@ public partial class babel_math : Node
 
 
 
+    private static string RemoveLeadingZeros(string input)
+    {
+        int i = 0;
+        while (i < input.Length && input[i] == '0')
+            i++;
+
+        return input.Substring(i);
+    }
+
+
     // Core conversion methods
 
     private static GDictionary BookNumberToAddress(BigInteger bookNumber)
@@ -221,6 +237,9 @@ public partial class babel_math : Node
         int BOOKS   = (int)global_values.Get("BOOKS");
         int SHELVES = (int)global_values.Get("SHELVES");
         int WALLS   = (int)global_values.Get("WALLS");
+        int PAGES   = (int)global_values.Get("PAGES");
+        int WORDS   = (int)global_values.Get("WORDS");
+        int LINES   = (int)global_values.Get("LINES");
 
         bookNumber = BigInteger.DivRem(bookNumber, BOOKS,   out BigInteger bookRemainder);
         bookNumber = BigInteger.DivRem(bookNumber, SHELVES, out BigInteger shelfRemainder);
@@ -232,9 +251,11 @@ public partial class babel_math : Node
         int shelfIndex = (int)shelfRemainder;
         int wallIndex  = (int)wallRemainder;
 
-        string hexString = BigIntegerToBase36(hexValue);
+        string hexString = RemoveLeadingZeros(BigIntegerToBase36(hexValue, PAGES * WORDS * LINES));
 
         BenchmarkTime("Unpacked address.");
+
+        GD.Print("Wall: " + wallIndex + ", Shelf: " + shelfIndex + ", Book: " + bookIndex);
 
         return new GDictionary
         {
@@ -271,11 +292,11 @@ public partial class babel_math : Node
             cachedHexValue = hexValue;
         }
 
-        BigInteger bookValue = hexValue;
-        bookValue = bookValue * (int)global_values.Get("WALLS")   + (int)address["wall"];
-        bookValue = bookValue * (int)global_values.Get("SHELVES") + (int)address["shelf"];
-        bookValue = bookValue * (int)global_values.Get("BOOKS")   + (int)address["book"];
-
+        BigInteger bookValue = hexValue * (int)global_values.Get("WALLS") * (int)global_values.Get("SHELVES") * (int)global_values.Get("BOOKS")
+                             + (int)address["wall"] * (int)global_values.Get("SHELVES") * (int)global_values.Get("BOOKS")
+                             + (int)address["shelf"] * (int)global_values.Get("BOOKS")
+                             + (int)address["book"];
+                             
         cachedBookKey   = bookKey;
         cachedBookValue = bookValue;
 
@@ -286,7 +307,31 @@ public partial class babel_math : Node
 
 
 
-    private static string BigIntegerToBase36(BigInteger value)
+    private static string BigIntegerToBase36(BigInteger value, int d)
+    {
+        if (d <= 1)
+        {
+            return BigIntegerToBase36Naive(value);
+        }
+
+        int k = d/2;
+
+        BigInteger splitPoint = BigInteger.Pow(36, k);
+
+        BigInteger high = value / splitPoint;
+        BigInteger low  = value % splitPoint;
+
+        string highStr = BigIntegerToBase36(high, d - k);
+        string lowStr  = BigIntegerToBase36(low, k);
+        
+        lowStr = lowStr.PadLeft(k, '0');
+
+        return highStr + lowStr;
+    }
+
+
+
+    private static string BigIntegerToBase36Naive(BigInteger value)
     {
         const string Base36Chars = "0123456789abcdefghijklmnopqrstuvwxyz";
 
@@ -357,25 +402,77 @@ public partial class babel_math : Node
 
 
 
-    private static BigInteger Base29ToBigInteger(string value)
+    private static BigInteger Base29ToBigInteger(ReadOnlySpan<char> input)
     {
-        BigInteger result = 0;
-        ReadOnlySpan<char> input = value.AsSpan();
-
-        foreach (char c in input)
+        if (input.Length <= 64)
         {
-            int digit = Base29Table[c];
+            BigInteger result = 0;
 
-            if (digit == -1)
-                throw new ArgumentException($"Invalid character '{c}' in base-29 string.");
+            foreach (char c in input)
+            {
+                int digit = Base29Table[c];
 
-            result = result * 29 + digit;
+                if (digit == -1)
+                    throw new ArgumentException($"Invalid character '{c}' in base-29 string.");
+
+                result = result * 29 + digit;
+            }
+
+            return result;
         }
 
-        BenchmarkTime("Converted from base-29.");
+            int k = input.Length / 2;
 
+            ReadOnlySpan<char> highPart = input.Slice(0, input.Length - k);
+            ReadOnlySpan<char> lowPart  = input.Slice(input.Length - k, k);
+
+            BigInteger Left = Base29ToBigInteger(highPart.ToString());
+            BigInteger Right = Base29ToBigInteger(lowPart.ToString());
+    
+            BenchmarkTime("Converted from base-29 (optimized for short strings).");
+
+            return (Left * Pow29(k)) + Right;
+    }
+
+
+    private static BigInteger Pow29(int y)
+    {
+        if (y == 0)
+            return BigInteger.One;
+        else if (y == 1)
+            return new BigInteger(29);
+
+        if (pow29Cache.TryGetValue(y, out BigInteger cached))
+        {
+            return cached;
+        }
+
+        int half = y / 2;
+
+        BigInteger result = Pow29(half) * Pow29(y - half);
+
+        pow29Cache[y] = result;
+        
         return result;
     }
+
+        // BigInteger result = 0;
+        // ReadOnlySpan<char> input = value.AsSpan();
+
+        // foreach (char c in input)
+        // {
+        //     int digit = Base29Table[c];
+
+        //     if (digit == -1)
+        //         throw new ArgumentException($"Invalid character '{c}' in base-29 string.");
+
+        //     result = result * 29 + digit;
+        // }
+
+        // BenchmarkTime("Converted from base-29.");
+
+        // return result;
+    
 
 
 

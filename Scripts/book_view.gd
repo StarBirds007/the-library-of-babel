@@ -41,7 +41,7 @@ func _ready() -> void:
 
 
 
-func refresh_text_box(page_only: bool = false) -> void:
+func refresh_text_box() -> void:
 	if thread.is_started():
 		return
 	
@@ -57,21 +57,12 @@ func refresh_text_box(page_only: bool = false) -> void:
 	print("Hex is " + str(selected_address["hex"].length()) + " characters long.\n")
 
 	# Update the active variables to match the selected ones
-	# Page only is for the next and previous buttons, because we don't want to update the hex or location when just changing the page
-	# Also, we set the value of the selected address to match the active one.
-	if not page_only:
-		address["hex"] = selected_address["hex"]
-		address["wall"] = selected_address["wall"]
-		address["shelf"] = selected_address["shelf"]
-		address["book"] = selected_address["book"]
-		address["page"] = selected_address["page"]
-	else:
-		selected_address["hex"] = address["hex"]
-		selected_address["wall"] = address["wall"]
-		selected_address["shelf"] = address["shelf"]
-		selected_address["book"] = address["book"]
-		address["page"] = selected_address["page"]
-		ui_update()
+	address["hex"] = selected_address["hex"]
+	address["wall"] = selected_address["wall"]
+	address["shelf"] = selected_address["shelf"]
+	address["book"] = selected_address["book"]
+	address["page"] = selected_address["page"]
+
 
 	GlobalValues.debug_time = Time.get_ticks_msec()
 	thread.start(_thread_func)
@@ -101,6 +92,7 @@ func _thread_finished(result: Dictionary) -> void:
 
 
 func print_page() -> void:
+	print("Page Length: " + str(current_book.length()) + " characters.\n")
 	$PageTextLabel.text = current_book
 	$PageTextLabel.get_child(0).text = current_title
 
@@ -188,6 +180,7 @@ func _input(event):
 func _on_next_pressed() -> void:
 	selected_address["page"] += 1
 	$Page.value = selected_address["page"] + 1
+	ui_update()
 	refresh_text_box()
 
 
@@ -195,4 +188,5 @@ func _on_next_pressed() -> void:
 func _on_previous_pressed() -> void:
 	selected_address["page"] -= 1
 	$Page.value = selected_address["page"] + 1
+	ui_update()
 	refresh_text_box()
