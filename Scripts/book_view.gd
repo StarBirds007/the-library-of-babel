@@ -8,13 +8,6 @@ var current_book: String = ""
 var current_title: String = ""
 var debug_time: float = 0.0
 
-const WALLS = 4
-const SHELVES = 5
-const BOOKS = 32
-const PAGES = 140
-const LINES = 40
-const WORDS = 80
-
 # Variables currently selected, used for display
 @onready var selected_address: Dictionary = {
 	"hex" : $Hex.text,
@@ -63,7 +56,6 @@ func refresh_text_box() -> void:
 	address["book"] = selected_address["book"]
 	address["page"] = selected_address["page"]
 
-
 	GlobalValues.debug_time = Time.get_ticks_msec()
 	thread.start(_thread_func)
 	
@@ -105,28 +97,28 @@ func print_page() -> void:
 
 func _on_page_value_changed(value:float) -> void:
 	var int_value = max(0, int(value))
-	if int_value <= PAGES:
+	if int_value <= GlobalValues.get("PAGES"):
 		selected_address["page"] = int_value - 1
 	
 
 
 func _on_book_value_changed(value:float) -> void:
 	var int_value = max(0, int(value))
-	if int_value <= BOOKS:
+	if int_value <= GlobalValues.get("BOOKS"):
 		selected_address["book"] = int_value - 1
 		
 
 
 func _on_shelf_value_changed(value:float) -> void:
 	var int_value = max(0, int(value))
-	if int_value <= SHELVES:
+	if int_value <= GlobalValues.get("SHELVES"):
 		selected_address["shelf"] = int_value - 1
 		
 
 
 func _on_wall_value_changed(value:float) -> void:
 	var int_value = max(0, int(value))
-	if int_value <= WALLS:
+	if int_value <= GlobalValues.get("WALLS"):
 		selected_address["wall"] = int_value - 1
 		
 
@@ -163,11 +155,11 @@ func ui_toggle(enable_ui: bool) -> void:
 
 
 func ui_update() -> void:
-	$Hex.text = address["hex"]
-	$Wall.value = address["wall"] + 1
-	$Shelf.value = address["shelf"] + 1
-	$Book.value = address["book"] + 1
-	$Page.value = address["page"] + 1
+	$Hex.text = selected_address["hex"]
+	$Wall.value = selected_address["wall"] + 1
+	$Shelf.value = selected_address["shelf"] + 1
+	$Book.value = selected_address["book"] + 1
+	$Page.value = selected_address["page"] + 1
 
 
 

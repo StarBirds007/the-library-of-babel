@@ -9,6 +9,77 @@ using System.Collections.Generic;
 public partial class babel_math : Node
 {
     private static Node global_values;
+    private static Dictionary<string, int> bookParameters = new Dictionary<string, int>();
+    private static int pageSize;
+    private static int totalSize;
+
+    private static class LCG
+    {
+        public static BigInteger a;
+        public static BigInteger c;
+        public static BigInteger m;
+        public static BigInteger a_inv;  // modular inverse of a mod m
+
+        public static void BuildParameters(BigInteger min_m)
+        {
+            BigInteger a_minus_1 = min_m / 2;
+
+            m = 4 * a_minus_1;
+            a = a_minus_1 + 1;
+            c =   //(BigInteger.Pow(2, 4253) - 1) *
+                  //(BigInteger.Pow(2, 11213) - 1) *
+                  //(BigInteger.Pow(2, 13466917) - 1) *
+                  //8191 *
+                13;
+
+            a_inv = ModInverse(a, m);
+        }
+
+        public static BigInteger Scramble(BigInteger value, bool reverse = false)
+        {
+            // return value;
+            if (reverse)
+                return a_inv * (value - c % m + m) % m;
+            else
+                return (a * value + c) % m;
+        }
+    }
+    private static class BitFlip
+    {
+        private static int totalBits;
+        private static int offset;   // We set an offset to make sure the resulting value doesn't exceed 29^totalSize.
+        private static int bitsToFlip;
+
+        public static void BuildParameters(BigInteger maxValueExclusive, int offset, int bitsToFlip)
+        {
+            totalBits   = (int)maxValueExclusive.GetBitLength();
+            BitFlip.offset = offset;
+            BitFlip.bitsToFlip = bitsToFlip;
+        }
+
+        public static BigInteger Flip(BigInteger value)
+        {
+            BigInteger result = value;
+
+            for (int i = 0; i < bitsToFlip; i++)
+            {
+                int highBitPos = totalBits - 1 - offset - i;
+                int lowBitPos  = bitsToFlip - 1 - i;
+
+                bool highBit = ((result >> highBitPos) & 1) == 1;
+                bool lowBit  = ((result >> lowBitPos)  & 1) == 1;
+
+                if (highBit != lowBit)
+                {
+                    result ^= (BigInteger.One << highBitPos);
+                    result ^= (BigInteger.One << lowBitPos);
+                }
+            }
+
+            return result;
+        }
+    }
+
 
     private static string     cachedHex      = "";
     private static BigInteger cachedHexValue = BigInteger.Zero;
@@ -16,7 +87,8 @@ public partial class babel_math : Node
     private static string     cachedBookKey   = "";
     private static BigInteger cachedBookValue = BigInteger.Zero;
 
-    private static Dictionary<int, BigInteger> pow29Cache = new Dictionary<int, BigInteger>();
+    private static Dictionary<BigInteger, BigInteger> pow29Cache = new Dictionary<BigInteger, BigInteger>();
+    private static Dictionary<BigInteger, BigInteger> pow36Cache = new Dictionary<BigInteger, BigInteger>();
 
     private static readonly Random Rng = new Random();
 
@@ -65,10 +137,19 @@ public partial class babel_math : Node
     public override void _Ready()
     {
         global_values = GetNode("/root/GlobalValues");
-        // int i = 10;
-        // for (int i = 0; i < 100; i++)
-        //     GD.Print("Conversion Testing: " + BigIntegerToBase36(i, 448000));
-        
+        bookParameters["WALLS"] = (int)global_values.Get("WALLS");
+        bookParameters["SHELVES"] = (int)global_values.Get("SHELVES");
+        bookParameters["BOOKS"] = (int)global_values.Get("BOOKS");
+        bookParameters["PAGES"] = (int)global_values.Get("PAGES");
+        bookParameters["LINES"] = (int)global_values.Get("LINES");
+        bookParameters["WORDS"] = (int)global_values.Get("WORDS");
+        bookParameters["TITLE"] = (int)global_values.Get("TITLE");
+
+        pageSize  = bookParameters["LINES"] * bookParameters["WORDS"];
+        totalSize = (pageSize * bookParameters["PAGES"]) + bookParameters["TITLE"];
+
+        LCG.BuildParameters(Pow29(totalSize));
+        BitFlip.BuildParameters(Pow29(totalSize), offset: 5, bitsToFlip: 10);
     }
 
 
@@ -77,14 +158,19 @@ public partial class babel_math : Node
 
     public static GDictionary GetPageAndTitleString(GDictionary address)
     {
-        int pageSize  = (int)global_values.Get("LINES") * (int)global_values.Get("WORDS");
-        int totalSize = pageSize * (int)global_values.Get("PAGES");
-
-        BigInteger bookValue = AddressToBookNumber(address);
+        BigInteger bookValue = AddressToBookNumber(address);   // This stores the entire numerical value of the book itself.
         BigInteger titleValue;
 
-        titleValue = ExtractRegion(bookValue, totalSize);
-        bookValue = ExtractRegion(bookValue, totalSize - ((int)address["page"] + 1) * pageSize);
+        BenchmarkTime("Calculated book value.");
+
+        bookValue = LCG.Scramble(bookValue);
+        bookValue = BitFlip.Flip(bookValue);
+
+        BenchmarkTime("Scrambled and flipped book value.");
+
+        // The ExtractRegion function extracts the "left side" of a numerical value from a given offset from the right.
+        titleValue = ExtractRegion(bookValue, totalSize - bookParameters["TITLE"]);   // Removed the total size of the book (all 140 pages) from the right, which leaves the 30 letter title.
+        bookValue = ExtractRegion(bookValue, totalSize - bookParameters["TITLE"] - ((int)address["page"] + 1) * pageSize);
 
         string bookString  = BigIntegerToBase29(bookValue, pageSize);
         string titleString = BigIntegerToBase29(titleValue);
@@ -102,10 +188,6 @@ public partial class babel_math : Node
 
     public static GDictionary SearchEmptyPageRandomBook(string searchText)
     {
-        int pageSize   = (int)global_values.Get("LINES") * (int)global_values.Get("WORDS");
-        int totalPages = (int)global_values.Get("PAGES");
-        int totalSize  = pageSize * totalPages;
-
         // The search text must fit within one page. If it's too long, we can't
         // place it — throw early with a clear message.
         if (searchText.Length > pageSize)
@@ -137,11 +219,11 @@ public partial class babel_math : Node
         // Step 2: Convert the page string to a BigInteger.
         BigInteger pageNumber = Base29ToBigInteger(pageString.AsSpan());
 
-        BenchmarkTime("Converted page text to BigInteger.");
+        BenchmarkTime("Converted from base-29.");
 
         // Step 3: Choose a random target page index.
-        int    targetPage      = Rng.Next(0, totalPages);
-        int    offsetFromRight = (totalPages - targetPage - 1) * pageSize;
+        int targetPage      = Rng.Next(0, bookParameters["PAGES"]);
+        int offsetFromRight = (bookParameters["PAGES"] - targetPage - 1) * pageSize;
 
         // Step 4: Generate random noise for pages below the target.
         BigInteger bottomNoise = BigInteger.Zero;
@@ -150,8 +232,6 @@ public partial class babel_math : Node
             BigInteger bottomRange = BigInteger.Pow(29, offsetFromRight);
             bottomNoise = RandomBigInteger(bottomRange);
         }
-
-        BenchmarkTime("Generated bottom noise.");
 
         // Step 5: Generate random noise for pages above the target.
         int    pagesAbove  = targetPage;
@@ -164,7 +244,7 @@ public partial class babel_math : Node
             topNoise = RandomBigInteger(topRange);
         }
 
-        BenchmarkTime("Generated top noise.");
+        BenchmarkTime("Generated noise.");
 
         // Step 6: Combine everything into a single book number.
         // We add the numbers by multiplying them by the appropriate powers of 29 to shift them into place, then summing:
@@ -177,7 +257,13 @@ public partial class babel_math : Node
 
         BenchmarkTime("Assembled book number.");
 
-        // Step 7: Convert the book number into an address.
+        // Step 7: Unscramble the book number with the LCG.
+        bookNumber = BitFlip.Flip(bookNumber);
+        bookNumber = LCG.Scramble(bookNumber, reverse: true);
+
+        BenchmarkTime("Unscrambled and flipped book number.");
+
+        // Step 8: Convert the book number into an address.
         GDictionary result = BookNumberToAddress(bookNumber);
         result["page"] = targetPage;
 
@@ -230,6 +316,82 @@ public partial class babel_math : Node
     }
 
 
+
+    private static (BigInteger gcd, BigInteger x, BigInteger y) ExtendedGcd(BigInteger a, BigInteger m)   // Returns (gcd, x, y) such that a*x + m*y = gcd
+
+    {
+        if (m == 0)
+            return (a, 1, 0);
+
+        var (gcd, x1, y1) = ExtendedGcd(m, a % m);
+
+        BigInteger x = y1;
+        BigInteger y = x1 - (a / m) * y1;
+
+        return (gcd, x, y);
+    }
+
+
+
+    public static BigInteger ModInverse(BigInteger a, BigInteger m)
+    {
+        var (gcd, x, _) = ExtendedGcd(a, m);
+
+        if (gcd != 1)
+            throw new ArgumentException("a and m are not coprime — no inverse exists.");
+
+        // x might be negative; force it into [0, m)
+        return ((x % m) + m) % m;
+    }
+
+
+
+    private static BigInteger Pow29(BigInteger y)
+    {
+        if (y == 0)
+            return BigInteger.One;
+        else if (y == 1)
+            return new BigInteger(29);
+
+        if (pow29Cache.TryGetValue(y, out BigInteger cached))
+        {
+            return cached;
+        }
+
+        BigInteger half = y / 2;
+
+        BigInteger result = Pow29(half) * Pow29(y - half);
+
+        pow29Cache[y] = result;
+        
+        return result;
+    }    
+
+
+
+    private static BigInteger Pow36(BigInteger y)
+    {
+        if (y == 0)
+            return BigInteger.One;
+        else if (y == 1)
+            return new BigInteger(36);
+
+        if (pow36Cache.TryGetValue(y, out BigInteger cached))
+        {
+            return cached;
+        }
+
+        BigInteger half = y / 2;
+
+        BigInteger result = Pow36(half) * Pow36(y - half);
+
+        pow36Cache[y] = result;
+        
+        return result;
+    }
+
+
+
     // Core conversion methods
 
     private static GDictionary BookNumberToAddress(BigInteger bookNumber)
@@ -252,10 +414,6 @@ public partial class babel_math : Node
         int wallIndex  = (int)wallRemainder;
 
         string hexString = RemoveLeadingZeros(BigIntegerToBase36(hexValue, PAGES * WORDS * LINES));
-
-        BenchmarkTime("Unpacked address.");
-
-        GD.Print("Wall: " + wallIndex + ", Shelf: " + shelfIndex + ", Book: " + bookIndex);
 
         return new GDictionary
         {
@@ -292,6 +450,9 @@ public partial class babel_math : Node
             cachedHexValue = hexValue;
         }
 
+        BenchmarkTime("Converted from base-36.");
+
+
         BigInteger bookValue = hexValue * (int)global_values.Get("WALLS") * (int)global_values.Get("SHELVES") * (int)global_values.Get("BOOKS")
                              + (int)address["wall"] * (int)global_values.Get("SHELVES") * (int)global_values.Get("BOOKS")
                              + (int)address["shelf"] * (int)global_values.Get("BOOKS")
@@ -300,14 +461,12 @@ public partial class babel_math : Node
         cachedBookKey   = bookKey;
         cachedBookValue = bookValue;
 
-        BenchmarkTime("Calculated book value.");
-
         return bookValue;
     }
 
 
 
-    private static string BigIntegerToBase36(BigInteger value, int d)
+    private static string BigIntegerToBase36(BigInteger value, int d)   // Uses recursion, also calls BigIntegerToBase36Naive.
     {
         if (d <= 1)
         {
@@ -351,25 +510,34 @@ public partial class babel_math : Node
 
 
 
-    private static BigInteger Base36ToBigInteger(string value)
+    private static BigInteger Base36ToBigInteger(ReadOnlySpan<char> input)
     {
-        BigInteger result = 0;
-
-        ReadOnlySpan<char> input = value.AsSpan();
-
-        foreach (char c in input)
+        if (input.Length <= 64)
         {
-            int digit = Base36Table[c];
+            BigInteger result = 0;
 
-            if (digit == -1)
-                throw new ArgumentException($"Invalid character '{c}' in hex string.");
+            foreach (char c in input)
+            {
+                int digit = Base36Table[c];
 
-            result = result * 36 + digit;
+                if (digit == -1)
+                    throw new ArgumentException($"Invalid character '{c}' in base-36 string.");
+
+                result = result * 36 + digit;
+            }
+
+            return result;
         }
 
-        BenchmarkTime("Converted from base-36.");
+            int k = input.Length / 2;
 
-        return result;
+            ReadOnlySpan<char> highPart = input.Slice(0, input.Length - k);
+            ReadOnlySpan<char> lowPart  = input.Slice(input.Length - k, k);
+
+            BigInteger Left = Base36ToBigInteger(highPart);
+            BigInteger Right = Base36ToBigInteger(lowPart);
+    
+            return (Left * Pow36(k)) + Right;
     }
 
 
@@ -426,53 +594,11 @@ public partial class babel_math : Node
             ReadOnlySpan<char> highPart = input.Slice(0, input.Length - k);
             ReadOnlySpan<char> lowPart  = input.Slice(input.Length - k, k);
 
-            BigInteger Left = Base29ToBigInteger(highPart.ToString());
-            BigInteger Right = Base29ToBigInteger(lowPart.ToString());
+            BigInteger Left = Base29ToBigInteger(highPart);
+            BigInteger Right = Base29ToBigInteger(lowPart);
     
-            BenchmarkTime("Converted from base-29 (optimized for short strings).");
-
             return (Left * Pow29(k)) + Right;
     }
-
-
-    private static BigInteger Pow29(int y)
-    {
-        if (y == 0)
-            return BigInteger.One;
-        else if (y == 1)
-            return new BigInteger(29);
-
-        if (pow29Cache.TryGetValue(y, out BigInteger cached))
-        {
-            return cached;
-        }
-
-        int half = y / 2;
-
-        BigInteger result = Pow29(half) * Pow29(y - half);
-
-        pow29Cache[y] = result;
-        
-        return result;
-    }
-
-        // BigInteger result = 0;
-        // ReadOnlySpan<char> input = value.AsSpan();
-
-        // foreach (char c in input)
-        // {
-        //     int digit = Base29Table[c];
-
-        //     if (digit == -1)
-        //         throw new ArgumentException($"Invalid character '{c}' in base-29 string.");
-
-        //     result = result * 29 + digit;
-        // }
-
-        // BenchmarkTime("Converted from base-29.");
-
-        // return result;
-    
 
 
 
