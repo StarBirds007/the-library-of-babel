@@ -321,4 +321,5 @@ script = ExtResource("10_08xtm")
 [connection signal="pressed" from="Hexagon/Wall4" to="." method="_on_wall_4_pressed"]
 [connection signal="pressed" from="Hexagon/DoorRight" to="." method="_on_door_right_pressed"]
 [connection signal="pressed" from="Hexagon/DoorLeft" to="." method="_on_door_left_pressed"]
+[connection signal="resized" from="HexTextEdit" to="HexTextEdit" method="_on_resized"]
 [connection signal="text_changed" from="HexTextEdit" to="." method="_on_sized_text_edit_text_changed"]

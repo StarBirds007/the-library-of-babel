@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://6pbst4uwvwcr"]
+[gd_scene load_steps=8 format=3 uid="uid://6pbst4uwvwcr"]
 
 [ext_resource type="PackedScene" uid="uid://bhvup4rxsvhlu" path="res://Scenes/UI/BrowsingWindow/hex_and_wall_select.tscn" id="1_2cpv0"]
 [ext_resource type="Texture2D" uid="uid://da4j3qbbh038t" path="res://Assets/Sprite/HexBackground.png" id="1_dui0p"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://cph8oke2cvfwa" path="res://Assets/Sprite/ReverseVignette.png" id="2_d4xkj"]
 [ext_resource type="Script" path="res://Scripts/sized_texture_rect_edit.gd" id="3_83ao1"]
 [ext_resource type="PackedScene" uid="uid://cwrx8pkue6scs" path="res://Scenes/UI/BrowsingWindow/shelf_select.tscn" id="5_fyemg"]
+[ext_resource type="Script" path="res://Scripts/step_container.gd" id="5_o3qxd"]
 
 [node name="BrowsingWindow" type="Control"]
 layout_mode = 3
@@ -58,10 +59,11 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("5_o3qxd")
 
 [node name="HexAndWallSelect" parent="StepContainer" instance=ExtResource("1_2cpv0")]
-visible = false
 layout_mode = 1
 
 [node name="ShelfSearch" parent="StepContainer" instance=ExtResource("5_fyemg")]
+visible = false
 layout_mode = 1

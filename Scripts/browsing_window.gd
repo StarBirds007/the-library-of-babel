@@ -1,7 +1,6 @@
 extends Control
 
-@onready var hex_and_wall_select: Control = $StepContainer/HexAndWallSelect
-@onready var shelf_select: Control = $StepContainer/ShelfSelect
+@onready var step_container: Control = $StepContainer
 
 
 var selected_address: Dictionary = {
@@ -13,3 +12,6 @@ var selected_address: Dictionary = {
 }
 
 
+func _ready() -> void:
+	step_container.bubble_up.connect(func obtain_values(addreses: Dictionary):
+		selected_address = addreses)

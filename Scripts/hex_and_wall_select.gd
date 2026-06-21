@@ -10,8 +10,8 @@ var current_texture_index: int = 0
 var last_text: String = ""
 var regex: RegEx = RegEx.new()
 
-signal changed_hex()
-signal changed_wall()
+signal changed_hex(hex: String)
+signal changed_wall(wall: int)
 
 const random_hex_textures: Array = [
 	preload("res://Assets/Sprite/WallSelectRandom/WallSelect.png"),

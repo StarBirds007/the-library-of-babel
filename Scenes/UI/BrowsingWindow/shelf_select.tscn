@@ -1,10 +1,10 @@
 [gd_scene load_steps=12 format=3 uid="uid://cwrx8pkue6scs"]
 
-[ext_resource type="Script" path="res://Scripts/shelf_search.gd" id="1_ubakh"]
+[ext_resource type="Script" path="res://Scripts/shelf_select.gd" id="1_m48uv"]
 [ext_resource type="Texture2D" uid="uid://wv1s4wyoccc4" path="res://Assets/Sprite/ShelfSelect.png" id="1_vncrq"]
 [ext_resource type="Script" path="res://Scripts/sized_texture_rect_edit.gd" id="2_1wldx"]
 [ext_resource type="Shader" path="res://Scenes/UI/BrowsingWindow/offset_shader.gdshader" id="3_w8w80"]
-[ext_resource type="Gradient" uid="uid://bqxvtqd73rmch" path="res://Scenes/UI/BrowsingWindow/hover_gradient.tres" id="4_0seal"]
+[ext_resource type="Gradient" uid="uid://qae2h2dfd4c2" path="res://Scenes/UI/BrowsingWindow/shelf_gradient.tres" id="5_donoq"]
 [ext_resource type="FontFile" uid="uid://dxsjq307w2kmu" path="res://Fonts/JetBrainsMono-Bold.ttf" id="5_sogp0"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_00f8m"]
@@ -20,10 +20,10 @@ colors = PackedColorArray(1, 1, 1, 0.85098)
 gradient = SubResource("Gradient_vyjyt")
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_lw37b"]
-gradient = ExtResource("4_0seal")
+gradient = ExtResource("5_donoq")
 fill = 1
-fill_from = Vector2(0.5, 0)
-fill_to = Vector2(0.5, 1)
+fill_from = Vector2(0.5, 1)
+fill_to = Vector2(0.5, 0)
 
 [sub_resource type="Theme" id="Theme_vmld8"]
 default_font = ExtResource("5_sogp0")
@@ -36,17 +36,23 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_ubakh")
+script = ExtResource("1_m48uv")
 
 [node name="Wall" type="TextureRect" parent="."]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -579.5
+offset_top = -326.0
+offset_right = 579.5
+offset_bottom = 326.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(0.693611, 0.693611)
-pivot_offset = Vector2(576, 324)
+pivot_offset = Vector2(579.5, 326)
 texture = ExtResource("1_vncrq")
 expand_mode = 1
 script = ExtResource("2_1wldx")
