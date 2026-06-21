@@ -1,4 +1,11 @@
-[gd_scene format=3 uid="uid://6pbst4uwvwcr"]
+[gd_scene load_steps=7 format=3 uid="uid://6pbst4uwvwcr"]
+
+[ext_resource type="PackedScene" uid="uid://bhvup4rxsvhlu" path="res://Scenes/UI/BrowsingWindow/hex_and_wall_select.tscn" id="1_2cpv0"]
+[ext_resource type="Texture2D" uid="uid://da4j3qbbh038t" path="res://Assets/Sprite/HexBackground.png" id="1_dui0p"]
+[ext_resource type="Script" path="res://Scripts/browsing_window.gd" id="1_wjcm8"]
+[ext_resource type="Texture2D" uid="uid://cph8oke2cvfwa" path="res://Assets/Sprite/ReverseVignette.png" id="2_d4xkj"]
+[ext_resource type="Script" path="res://Scripts/sized_texture_rect_edit.gd" id="3_83ao1"]
+[ext_resource type="PackedScene" uid="uid://cwrx8pkue6scs" path="res://Scenes/UI/BrowsingWindow/shelf_select.tscn" id="5_fyemg"]
 
 [node name="BrowsingWindow" type="Control"]
 layout_mode = 3
@@ -7,12 +14,54 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_wjcm8")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.941466, 0.940031, 0.918908, 1)
+
+[node name="Parallax2D" type="Parallax2D" parent="."]
+scale = Vector2(0.47803, 0.47803)
+scroll_offset = Vector2(3013, 2160)
+repeat_size = Vector2(1383, 409)
+autoscroll = Vector2(20, 40)
+repeat_times = 11
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax2D"]
+modulate = Color(1, 1, 1, 0.129412)
+texture = ExtResource("1_dui0p")
+
+[node name="SizedTextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -384.0
+offset_top = -216.0
+offset_right = 384.0
+offset_bottom = 216.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.910303, 0.910303)
+pivot_offset = Vector2(960, 540)
+texture = ExtResource("2_d4xkj")
+script = ExtResource("3_83ao1")
+
+[node name="StepContainer" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HexAndWallSelect" parent="StepContainer" instance=ExtResource("1_2cpv0")]
+visible = false
+layout_mode = 1
+
+[node name="ShelfSearch" parent="StepContainer" instance=ExtResource("5_fyemg")]
+layout_mode = 1

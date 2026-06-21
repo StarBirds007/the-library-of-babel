@@ -1,0 +1,324 @@
+[gd_scene load_steps=24 format=3 uid="uid://bhvup4rxsvhlu"]
+
+[ext_resource type="Script" path="res://Scripts/hex_and_wall_select.gd" id="1_vqyrt"]
+[ext_resource type="Shader" path="res://Scenes/UI/BrowsingWindow/offset_shader.gdshader" id="2_2obqk"]
+[ext_resource type="Texture2D" uid="uid://b8vy728nhx1wu" path="res://Assets/Sprite/WallSelectRandom/WallSelect.png" id="2_g078j"]
+[ext_resource type="Script" path="res://Scripts/sized_texture_rect_edit.gd" id="3_2cjp2"]
+[ext_resource type="Shader" path="res://Scenes/UI/BrowsingWindow/wall_select_triangle.gdshader" id="4_lgyc4"]
+[ext_resource type="Gradient" uid="uid://bqxvtqd73rmch" path="res://Scenes/UI/BrowsingWindow/hover_gradient.tres" id="5_4ij6q"]
+[ext_resource type="Script" path="res://Scripts/wall_triangle.gd" id="6_necky"]
+[ext_resource type="Script" path="res://Scripts/wall_skewed.gd" id="7_ttioq"]
+[ext_resource type="Shader" path="res://Scenes/UI/BrowsingWindow/wall_select_skewed.gdshader" id="8_4mgp1"]
+[ext_resource type="FontFile" uid="uid://dxsjq307w2kmu" path="res://Fonts/JetBrainsMono-Bold.ttf" id="9_s0b1g"]
+[ext_resource type="Script" path="res://Scripts/sized_text_edit.gd" id="10_08xtm"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mrce5"]
+shader = ExtResource("2_2obqk")
+shader_parameter/offset_x = 0.0
+shader_parameter/offset_y = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_818r7"]
+shader = ExtResource("4_lgyc4")
+shader_parameter/point_right = false
+shader_parameter/offset_x = 0.0
+shader_parameter/offset_y = 0.0
+
+[sub_resource type="Gradient" id="Gradient_vg0eu"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(1, 1, 1, 0.85098)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_gwj5b"]
+gradient = SubResource("Gradient_vg0eu")
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_tjxq3"]
+gradient = ExtResource("5_4ij6q")
+fill_from = Vector2(0.5, 0)
+fill_to = Vector2(0.5, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wwcpx"]
+shader = ExtResource("2_2obqk")
+shader_parameter/offset_x = 0.0
+shader_parameter/offset_y = 0.0
+
+[sub_resource type="Shader" id="Shader_xgmgm"]
+code = "shader_type canvas_item;
+
+uniform float skew_amount : hint_range(-1.0, 1.0) = 0.3;
+// 1.0 is normal size. Values higher than 1.0 will squish it vertically.
+uniform float vertical_squish : hint_range(1.0, 5.0) = 1.5; 
+
+// These values stay perfectly still until you change them via code
+uniform float offset_x = 0.0;
+uniform float offset_y = 0.0;
+
+void vertex() {
+    // Moves the object's visual mesh by the specified X and Y amounts once
+    VERTEX.x += offset_x;
+    VERTEX.y += offset_y;
+}
+
+void fragment() {
+    vec2 uv = UV;
+    
+    // Skew: as x goes from 0 (left) to 1 (right), shift y sampling
+    uv.y += (uv.x - 0.5) * skew_amount;
+
+	// Code to squish it towards the center on y axis
+	uv.y = (uv.y - 0.5) * vertical_squish + 0.5;
+
+    if (uv.y < 0.0 || uv.y > 1.0) {
+        COLOR = vec4(0.0, 0.0, 0.0, 0.0);
+    } else {
+        COLOR = texture(TEXTURE, uv);
+    }
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_q3ngv"]
+shader = SubResource("Shader_xgmgm")
+shader_parameter/skew_amount = 0.264
+shader_parameter/vertical_squish = 1.5
+shader_parameter/offset_x = 0.0
+shader_parameter/offset_y = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_envmi"]
+shader = ExtResource("2_2obqk")
+shader_parameter/offset_x = 0.0
+shader_parameter/offset_y = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5c4nh"]
+shader = ExtResource("4_lgyc4")
+shader_parameter/point_right = true
+shader_parameter/offset_x = 0.0
+shader_parameter/offset_y = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_aymy5"]
+shader = ExtResource("8_4mgp1")
+shader_parameter/skew_amount = -0.264
+shader_parameter/vertical_squish = 1.5
+
+[sub_resource type="Theme" id="Theme_s60by"]
+default_font = ExtResource("9_s0b1g")
+PopupMenu/fonts/font = ExtResource("9_s0b1g")
+
+[node name="HexAndWallSelect" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_vqyrt")
+
+[node name="Hexagon" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_mrce5")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -330.5
+offset_top = -186.0
+offset_right = 330.5
+offset_bottom = 186.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(330.5, 186)
+texture = ExtResource("2_g078j")
+expand_mode = 1
+script = ExtResource("3_2cjp2")
+
+[node name="Wall1" type="TextureButton" parent="Hexagon"]
+material = SubResource("ShaderMaterial_818r7")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -145.5
+offset_top = -145.0
+offset_right = -70.5
+offset_bottom = -17.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_gwj5b")
+texture_hover = SubResource("GradientTexture2D_tjxq3")
+ignore_texture_size = true
+stretch_mode = 0
+script = ExtResource("6_necky")
+
+[node name="Wall2" type="TextureButton" parent="Hexagon"]
+material = SubResource("ShaderMaterial_wwcpx")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -69.5
+offset_top = -143.0
+offset_right = 73.5
+offset_bottom = -19.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_gwj5b")
+texture_hover = SubResource("GradientTexture2D_tjxq3")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Wall3" type="TextureButton" parent="Hexagon"]
+material = SubResource("ShaderMaterial_q3ngv")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 74.5
+offset_top = -87.0
+offset_right = 149.5
+offset_bottom = 155.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_gwj5b")
+texture_hover = SubResource("GradientTexture2D_tjxq3")
+ignore_texture_size = true
+stretch_mode = 0
+script = ExtResource("7_ttioq")
+
+[node name="Wall4" type="TextureButton" parent="Hexagon"]
+material = SubResource("ShaderMaterial_envmi")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -72.5
+offset_top = -15.0
+offset_right = 74.5
+offset_bottom = 147.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_gwj5b")
+texture_hover = SubResource("GradientTexture2D_tjxq3")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="DoorRight" type="TextureButton" parent="Hexagon"]
+material = SubResource("ShaderMaterial_5c4nh")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 74.5
+offset_top = -143.0
+offset_right = 149.5
+offset_bottom = -17.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_gwj5b")
+texture_hover = SubResource("GradientTexture2D_tjxq3")
+ignore_texture_size = true
+stretch_mode = 0
+script = ExtResource("6_necky")
+
+[node name="DoorLeft" type="TextureButton" parent="Hexagon"]
+material = SubResource("ShaderMaterial_aymy5")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -146.5
+offset_top = -87.0
+offset_right = -73.5
+offset_bottom = 155.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_gwj5b")
+texture_hover = SubResource("GradientTexture2D_tjxq3")
+ignore_texture_size = true
+stretch_mode = 0
+script = ExtResource("7_ttioq")
+
+[node name="OptionButton" type="OptionButton" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 240.0
+offset_top = -44.0
+offset_right = 316.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_s60by")
+theme_override_fonts/font = ExtResource("9_s0b1g")
+theme_override_font_sizes/font_size = 16
+item_count = 4
+popup/item_0/text = "1"
+popup/item_1/text = "2"
+popup/item_1/id = 1
+popup/item_2/text = "3"
+popup/item_2/id = 2
+popup/item_3/text = "4"
+popup/item_3/id = 3
+
+[node name="Label" type="Label" parent="OptionButton"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -38.5
+offset_top = -48.0
+offset_right = 96.5
+offset_bottom = -25.6667
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("9_s0b1g")
+text = "Selected Wall:"
+
+[node name="HexTextEdit" type="TextEdit" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -153.0
+offset_top = -283.0
+offset_right = 154.0
+offset_bottom = -194.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(153.5, 44.5)
+theme_override_fonts/font = ExtResource("9_s0b1g")
+theme_override_font_sizes/font_size = 16
+placeholder_text = "Enter Hex (Room) Number..."
+wrap_mode = 1
+script = ExtResource("10_08xtm")
+
+[connection signal="pressed" from="Hexagon/Wall1" to="." method="_on_wall_1_pressed"]
+[connection signal="pressed" from="Hexagon/Wall2" to="." method="_on_wall_2_pressed"]
+[connection signal="pressed" from="Hexagon/Wall3" to="." method="_on_wall_3_pressed"]
+[connection signal="pressed" from="Hexagon/Wall4" to="." method="_on_wall_4_pressed"]
+[connection signal="pressed" from="Hexagon/DoorRight" to="." method="_on_door_right_pressed"]
+[connection signal="pressed" from="Hexagon/DoorLeft" to="." method="_on_door_left_pressed"]
+[connection signal="text_changed" from="HexTextEdit" to="." method="_on_sized_text_edit_text_changed"]

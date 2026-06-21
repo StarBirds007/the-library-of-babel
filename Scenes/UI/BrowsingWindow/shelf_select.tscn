@@ -1,0 +1,196 @@
+[gd_scene load_steps=12 format=3 uid="uid://cwrx8pkue6scs"]
+
+[ext_resource type="Script" path="res://Scripts/shelf_search.gd" id="1_ubakh"]
+[ext_resource type="Texture2D" uid="uid://wv1s4wyoccc4" path="res://Assets/Sprite/ShelfSelect.png" id="1_vncrq"]
+[ext_resource type="Script" path="res://Scripts/sized_texture_rect_edit.gd" id="2_1wldx"]
+[ext_resource type="Shader" path="res://Scenes/UI/BrowsingWindow/offset_shader.gdshader" id="3_w8w80"]
+[ext_resource type="Gradient" uid="uid://bqxvtqd73rmch" path="res://Scenes/UI/BrowsingWindow/hover_gradient.tres" id="4_0seal"]
+[ext_resource type="FontFile" uid="uid://dxsjq307w2kmu" path="res://Fonts/JetBrainsMono-Bold.ttf" id="5_sogp0"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_00f8m"]
+shader = ExtResource("3_w8w80")
+shader_parameter/offset_x = 0.0
+shader_parameter/offset_y = 0.0
+
+[sub_resource type="Gradient" id="Gradient_vyjyt"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(1, 1, 1, 0.85098)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_wntqm"]
+gradient = SubResource("Gradient_vyjyt")
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_lw37b"]
+gradient = ExtResource("4_0seal")
+fill = 1
+fill_from = Vector2(0.5, 0)
+fill_to = Vector2(0.5, 1)
+
+[sub_resource type="Theme" id="Theme_vmld8"]
+default_font = ExtResource("5_sogp0")
+PopupMenu/fonts/font = ExtResource("5_sogp0")
+
+[node name="ShelfSelect" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ubakh")
+
+[node name="Wall" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.693611, 0.693611)
+pivot_offset = Vector2(576, 324)
+texture = ExtResource("1_vncrq")
+expand_mode = 1
+script = ExtResource("2_1wldx")
+
+[node name="Shelf1" type="TextureButton" parent="Wall"]
+material = SubResource("ShaderMaterial_00f8m")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -228.0
+offset_right = 301.0
+offset_bottom = -146.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_wntqm")
+texture_hover = SubResource("GradientTexture2D_lw37b")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Shelf2" type="TextureButton" parent="Wall"]
+material = SubResource("ShaderMaterial_00f8m")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -299.88
+offset_top = -134.081
+offset_right = 301.12
+offset_bottom = -52.081
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_wntqm")
+texture_hover = SubResource("GradientTexture2D_lw37b")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Shelf3" type="TextureButton" parent="Wall"]
+material = SubResource("ShaderMaterial_00f8m")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -299.88
+offset_top = -41.8102
+offset_right = 301.12
+offset_bottom = 40.1898
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_wntqm")
+texture_hover = SubResource("GradientTexture2D_lw37b")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Shelf4" type="TextureButton" parent="Wall"]
+material = SubResource("ShaderMaterial_00f8m")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -299.88
+offset_top = 53.3441
+offset_right = 301.12
+offset_bottom = 135.344
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_wntqm")
+texture_hover = SubResource("GradientTexture2D_lw37b")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Shelf5" type="TextureButton" parent="Wall"]
+material = SubResource("ShaderMaterial_00f8m")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -299.88
+offset_top = 147.057
+offset_right = 301.12
+offset_bottom = 229.057
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_wntqm")
+texture_hover = SubResource("GradientTexture2D_lw37b")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="OptionButton" type="OptionButton" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 240.0
+offset_top = -44.0
+offset_right = 316.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_vmld8")
+theme_override_fonts/font = ExtResource("5_sogp0")
+theme_override_font_sizes/font_size = 16
+item_count = 5
+popup/item_0/text = "1"
+popup/item_1/text = "2"
+popup/item_1/id = 1
+popup/item_2/text = "3"
+popup/item_2/id = 2
+popup/item_3/text = "4"
+popup/item_3/id = 3
+popup/item_4/text = "5"
+popup/item_4/id = 4
+
+[node name="Label" type="Label" parent="OptionButton"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -38.5
+offset_top = -48.0
+offset_right = 96.5
+offset_bottom = -25.6667
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("5_sogp0")
+text = "Selected Shelf:"
