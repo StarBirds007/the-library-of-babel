@@ -12,12 +12,12 @@ shader = ExtResource("3_w8w80")
 shader_parameter/offset_x = 0.0
 shader_parameter/offset_y = 0.0
 
-[sub_resource type="Gradient" id="Gradient_vyjyt"]
+[sub_resource type="Gradient" id="Gradient_acm6h"]
 offsets = PackedFloat32Array(1)
 colors = PackedColorArray(1, 1, 1, 0.85098)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_wntqm"]
-gradient = SubResource("Gradient_vyjyt")
+gradient = SubResource("Gradient_acm6h")
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_lw37b"]
 gradient = ExtResource("5_donoq")

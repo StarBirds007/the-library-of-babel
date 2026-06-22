@@ -93,9 +93,8 @@ public partial class babel_math : Node
     private static readonly Random Rng = new Random();
 
     private static readonly char[] Base29Characters = {
-        'a','b','c','d','e','f','g','h','i','j','k','l','m',
-        'n','o','p','q','r','s','t','u','v','w','x','y','z',
-        ' ', ',', '.'
+        ' ', ',', '.', 'a','b','c','d','e','f','g','h','i','j','k','l','m',
+        'n','o','p','q','r','s','t','u','v','w','x','y','z'
     };
 
     private static readonly int[] Base36Table = CreateBase36Table();
@@ -274,11 +273,42 @@ public partial class babel_math : Node
 
 
 
+public static string[] MassTitleRetrieval(GDictionary address)
+{
+    int BOOKS = bookParameters["BOOKS"];
+    int TITLE = bookParameters["TITLE"];
+
+    string[] titles = new string[BOOKS];
+
+    GDictionary baseAddress = address;
+    baseAddress["book"] = 0;
+
+    BigInteger baseValue = AddressToBookNumber(baseAddress);
+
+
+    int titleOffset = totalSize - TITLE;
+
+    for (int i = 0; i < BOOKS; i++)
+    {
+        BigInteger bookValue = baseValue + i;
+
+        bookValue = LCG.Scramble(bookValue);
+        bookValue = BitFlip.Flip(bookValue);
+
+        BigInteger titleValue = ExtractRegion(bookValue, titleOffset);
+
+        titles[i] = BigIntegerToBase29(titleValue, TITLE);
+    }
+
+    return titles;
+}
+
+
     // Helper methods
 
     private static BigInteger ExtractRegion(BigInteger value, int offsetFromRight)
     {
-        BigInteger shifted = value / BigInteger.Pow(29, offsetFromRight);
+        BigInteger shifted = value / Pow29(offsetFromRight);
 
         return shifted;
     }

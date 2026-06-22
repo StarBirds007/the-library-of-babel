@@ -2,5 +2,5 @@
 
 [resource]
 offsets = PackedFloat32Array(0, 0.8)
-colors = PackedColorArray(1, 1, 1, 0.74902, 0, 0, 0, 0)
+colors = PackedColorArray(1, 1, 1, 0.74902, 1, 1, 1, 0)
 metadata/_snap_enabled = true

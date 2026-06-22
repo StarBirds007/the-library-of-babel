@@ -20,6 +20,10 @@ config/icon="res://icon.svg"
 GlobalValues="*res://Scripts/global_values.gd"
 BabelMath="*res://Scripts/babel_math.cs"
 
+[debug]
+
+gdscript/warnings/untyped_declaration=1
+
 [display]
 
 window/stretch/mode="canvas_items"

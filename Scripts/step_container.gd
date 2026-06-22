@@ -3,6 +3,23 @@ extends Control
 @onready var hex_and_wall_select: Control = $HexAndWallSelect
 @onready var shelf_search: Control = $ShelfSearch
 
+var tween: Tween = get_tree().create_tween().bind_node(self)
+
+enum module {HEXANDWALL, SHELF, BOOK}
+var current_module: int = module.HEXANDWALL:
+	set(value):
+		if (current_module + 1 == value):
+			current_module = value
+			transition(true)
+
+		elif (current_module - 1 == value):
+			current_module = value
+			transition(false)
+
+		else:
+			print("Trying to skip steps!")
+			return
+
 var address_container: Dictionary = {
 	"hex" : "",
 	"wall" : 0,
@@ -29,3 +46,6 @@ func _ready() -> void:
 		bubble_up.emit(address_container))
 
 
+func transition(forward: bool = true) -> void:
+	if forward:
+		pass

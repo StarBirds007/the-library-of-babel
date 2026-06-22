@@ -1,11 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://6pbst4uwvwcr"]
+[gd_scene load_steps=6 format=3 uid="uid://6pbst4uwvwcr"]
 
-[ext_resource type="PackedScene" uid="uid://bhvup4rxsvhlu" path="res://Scenes/UI/BrowsingWindow/hex_and_wall_select.tscn" id="1_2cpv0"]
 [ext_resource type="Texture2D" uid="uid://da4j3qbbh038t" path="res://Assets/Sprite/HexBackground.png" id="1_dui0p"]
 [ext_resource type="Script" path="res://Scripts/browsing_window.gd" id="1_wjcm8"]
 [ext_resource type="Texture2D" uid="uid://cph8oke2cvfwa" path="res://Assets/Sprite/ReverseVignette.png" id="2_d4xkj"]
 [ext_resource type="Script" path="res://Scripts/sized_texture_rect_edit.gd" id="3_83ao1"]
-[ext_resource type="PackedScene" uid="uid://cwrx8pkue6scs" path="res://Scenes/UI/BrowsingWindow/shelf_select.tscn" id="5_fyemg"]
 [ext_resource type="Script" path="res://Scripts/step_container.gd" id="5_o3qxd"]
 
 [node name="BrowsingWindow" type="Control"]
@@ -52,7 +50,7 @@ pivot_offset = Vector2(960, 540)
 texture = ExtResource("2_d4xkj")
 script = ExtResource("3_83ao1")
 
-[node name="StepContainer" type="Control" parent="."]
+[node name="ModuleContainer" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -61,9 +59,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("5_o3qxd")
 
-[node name="HexAndWallSelect" parent="StepContainer" instance=ExtResource("1_2cpv0")]
-layout_mode = 1
-
-[node name="ShelfSearch" parent="StepContainer" instance=ExtResource("5_fyemg")]
-visible = false
-layout_mode = 1
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0

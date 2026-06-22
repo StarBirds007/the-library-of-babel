@@ -1,0 +1,710 @@
+[gd_scene load_steps=11 format=3 uid="uid://b3niwf3tt8ngi"]
+
+[ext_resource type="Script" path="res://Scripts/book_select.gd" id="1_h2dtn"]
+[ext_resource type="Texture2D" uid="uid://cem3c7cl2fgn" path="res://Assets/Sprite/BookSelect.png" id="1_s8an1"]
+[ext_resource type="Script" path="res://Scripts/sized_texture_rect_edit.gd" id="2_4tmkd"]
+[ext_resource type="Shader" path="res://Scenes/UI/BrowsingWindow/offset_shader.gdshader" id="3_b3n36"]
+[ext_resource type="Gradient" uid="uid://jwo73loxirr7" path="res://Scenes/UI/BrowsingWindow/book_gradient.tres" id="4_5vrvr"]
+[ext_resource type="FontFile" uid="uid://dxsjq307w2kmu" path="res://Fonts/JetBrainsMono-Bold.ttf" id="6_xr4vc"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_f43y8"]
+shader = ExtResource("3_b3n36")
+shader_parameter/offset_x = 0.0
+shader_parameter/offset_y = 0.0
+
+[sub_resource type="Gradient" id="Gradient_vyjyt"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(1, 1, 1, 0.85098)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_c647i"]
+gradient = SubResource("Gradient_vyjyt")
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_lhw8u"]
+gradient = ExtResource("4_5vrvr")
+fill_from = Vector2(0.5, 1)
+fill_to = Vector2(0.5, 0)
+
+[node name="BookSelect" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_h2dtn")
+
+[node name="Shelf" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -423.0
+offset_top = -238.0
+offset_right = 423.0
+offset_bottom = 238.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(423, 238)
+texture = ExtResource("1_s8an1")
+expand_mode = 1
+script = ExtResource("2_4tmkd")
+
+[node name="Book1" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -352.0
+offset_top = -183.0
+offset_right = -315.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book2" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -308.0
+offset_top = -183.0
+offset_right = -271.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book3" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -264.0
+offset_top = -183.0
+offset_right = -227.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book4" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -219.0
+offset_top = -183.0
+offset_right = -182.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book5" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -174.0
+offset_top = -183.0
+offset_right = -137.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book6" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -130.0
+offset_top = -183.0
+offset_right = -93.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book7" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -86.0
+offset_top = -183.0
+offset_right = -49.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book8" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -41.0
+offset_top = -183.0
+offset_right = -4.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book9" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 4.0
+offset_top = -183.0
+offset_right = 41.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book10" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 48.0
+offset_top = -183.0
+offset_right = 85.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book11" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 92.0
+offset_top = -183.0
+offset_right = 129.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book12" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 137.0
+offset_top = -183.0
+offset_right = 174.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book13" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 182.0
+offset_top = -183.0
+offset_right = 219.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book14" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 226.0
+offset_top = -183.0
+offset_right = 263.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book15" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 270.0
+offset_top = -183.0
+offset_right = 307.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book16" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 315.0
+offset_top = -183.0
+offset_right = 352.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book17" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -352.0
+offset_top = 5.0
+offset_right = -315.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book18" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -308.0
+offset_top = 5.0
+offset_right = -271.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book19" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -264.0
+offset_top = 5.0
+offset_right = -227.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book20" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -219.0
+offset_top = 5.0
+offset_right = -182.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book21" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -174.0
+offset_top = 5.0
+offset_right = -137.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book22" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -130.0
+offset_top = 5.0
+offset_right = -93.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book23" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -86.0
+offset_top = 5.0
+offset_right = -49.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book24" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -41.0
+offset_top = 5.0
+offset_right = -4.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book25" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 4.0
+offset_top = 5.0
+offset_right = 41.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book26" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 48.0
+offset_top = 5.0
+offset_right = 85.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book27" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 92.0
+offset_top = 5.0
+offset_right = 129.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book28" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 137.0
+offset_top = 5.0
+offset_right = 174.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book29" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 182.0
+offset_top = 5.0
+offset_right = 219.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book30" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 226.0
+offset_top = 5.0
+offset_right = 263.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book31" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 270.0
+offset_top = 5.0
+offset_right = 307.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Book32" type="TextureButton" parent="Shelf"]
+material = SubResource("ShaderMaterial_f43y8")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 315.0
+offset_top = 5.0
+offset_right = 352.0
+offset_bottom = 183.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_pressed = SubResource("GradientTexture2D_c647i")
+texture_hover = SubResource("GradientTexture2D_lhw8u")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -131.0
+offset_top = -271.0
+offset_right = 131.0
+offset_bottom = -239.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("6_xr4vc")
+theme_override_font_sizes/font_size = 24
+text = "Selected Book: "
