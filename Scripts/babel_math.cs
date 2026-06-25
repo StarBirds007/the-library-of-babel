@@ -3,6 +3,7 @@ using GDictionary = Godot.Collections.Dictionary;
 using System;
 using System.Numerics;
 using System.Collections.Generic;
+using System.Linq;
 
 
 
@@ -179,7 +180,7 @@ public partial class babel_math : Node
         return new GDictionary
         {
             {"title" , titleString},
-            {"book" , bookString}
+            {"page" , bookString}
         };
     }
 
@@ -297,7 +298,7 @@ public static string[] MassTitleRetrieval(GDictionary address)
 
         BigInteger titleValue = ExtractRegion(bookValue, titleOffset);
 
-        titles[i] = BigIntegerToBase29(titleValue, TITLE);
+        titles[i] = RemoveLeadingAndEndingSpaces(BigIntegerToBase29(titleValue, TITLE));
     }
 
     return titles;
@@ -343,6 +344,29 @@ public static string[] MassTitleRetrieval(GDictionary address)
             i++;
 
         return input.Substring(i);
+    }
+
+
+
+    private static string RemoveLeadingAndEndingSpaces(string input)
+    {
+        int i = 0;
+        while (i < input.Length && input[i] == ' ')
+            i++;
+        
+        char[] charArray = input.Substring(i).ToCharArray();
+        Array.Reverse(charArray);
+        input = new string(charArray);
+
+        i = 0;
+        while (i < input.Length && input[i] == ' ')
+            i++;
+
+        charArray = input.Substring(i).ToCharArray();
+        Array.Reverse(charArray);
+        input = new string(charArray);
+
+        return input;
     }
 
 

@@ -10,8 +10,13 @@ var current_texture_index: int = 0
 var last_text: String = ""
 var regex: RegEx = RegEx.new()
 
-signal changed_hex(hex: String)
+var current_hex: String = ""
+var current_wall: int = -1
+
 signal changed_wall(wall: int)
+
+signal field_selected(field_name: String, value: Variant)
+signal step_ready(is_ready: bool)
 
 const random_hex_textures: Array = [
 	preload("res://Assets/Sprite/WallSelectRandom/WallSelect.png"),
@@ -26,12 +31,39 @@ const random_hex_textures: Array = [
 func _ready() -> void:
 	for i in range(4):
 		hexagon.get_child(i).pressed.connect(
-		func set_wall():
-			changed_wall.emit(i)
-			option_button.selected = i)
+		func set_wall() -> void:
+			_set_wall(i))
+
+	option_button.item_selected.connect(_set_wall)
 
 	regex.compile("[^0-9a-z]")
 
+
+func prepare(address: Dictionary) -> void:
+	if address.get("hex", "") != "":
+		hex_text.text = address["hex"]
+		last_text = address["hex"]
+		current_hex = address["hex"]
+		random_hex_sprite()
+
+	if address.has("wall"):
+		current_wall = address["wall"]
+		option_button.selected = current_wall
+
+	_emit_ready_state()
+
+
+func _set_wall(wall: int) -> void:
+	current_wall = wall
+	option_button.selected = wall
+	changed_wall.emit(wall)
+	field_selected.emit("wall", wall)
+	_emit_ready_state()
+
+
+func _emit_ready_state() -> void:
+	var is_ready: bool = current_hex != null and current_wall >= 0
+	step_ready.emit(is_ready)
 
 
 func random_hex_sprite() -> void:
@@ -63,11 +95,11 @@ func random_hex_jitter() -> void:
 		if child.material is ShaderMaterial:
 			child.material.set_shader_parameter("offset_x", random_offset.x)
 			child.material.set_shader_parameter("offset_y", random_offset.y)
-			
+
 
 func _on_sized_text_edit_text_changed() -> void:
 	var input: String = hex_text.text
-	var caret_pos = hex_text.get_caret_column()
+	var caret_pos: int = hex_text.get_caret_column()
 
 	var filtered: String = regex.sub(input, "", true)
 
@@ -75,11 +107,10 @@ func _on_sized_text_edit_text_changed() -> void:
 		hex_text.text = filtered
 		hex_text.set_caret_column(caret_pos - 1)
 
-	changed_hex.emit(hex_text)
+	current_hex = hex_text.text
+	field_selected.emit("hex", current_hex)
+	_emit_ready_state()
 
 	if hex_text.text != last_text or (hex_text.text == "0" and last_text == ""):
 		last_text = hex_text.text
 		random_hex_sprite()
-
-
-

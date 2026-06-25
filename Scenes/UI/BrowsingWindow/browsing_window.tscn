@@ -1,10 +1,26 @@
-[gd_scene load_steps=6 format=3 uid="uid://6pbst4uwvwcr"]
+[gd_scene load_steps=14 format=3 uid="uid://6pbst4uwvwcr"]
 
+[ext_resource type="PackedScene" uid="uid://bhvup4rxsvhlu" path="res://Scenes/UI/BrowsingWindow/hex_and_wall_select.tscn" id="1_2cpv0"]
 [ext_resource type="Texture2D" uid="uid://da4j3qbbh038t" path="res://Assets/Sprite/HexBackground.png" id="1_dui0p"]
 [ext_resource type="Script" path="res://Scripts/browsing_window.gd" id="1_wjcm8"]
 [ext_resource type="Texture2D" uid="uid://cph8oke2cvfwa" path="res://Assets/Sprite/ReverseVignette.png" id="2_d4xkj"]
 [ext_resource type="Script" path="res://Scripts/sized_texture_rect_edit.gd" id="3_83ao1"]
-[ext_resource type="Script" path="res://Scripts/step_container.gd" id="5_o3qxd"]
+[ext_resource type="PackedScene" uid="uid://cwrx8pkue6scs" path="res://Scenes/UI/BrowsingWindow/shelf_select.tscn" id="5_fyemg"]
+[ext_resource type="FontFile" uid="uid://dxsjq307w2kmu" path="res://Fonts/JetBrainsMono-Bold.ttf" id="8_je76m"]
+[ext_resource type="PackedScene" uid="uid://cc56xlxlhssu4" path="res://Scenes/UI/BrowsingWindow/book_interface.tscn" id="8_qbme8"]
+[ext_resource type="PackedScene" uid="uid://b3niwf3tt8ngi" path="res://Scenes/UI/BrowsingWindow/book_select.tscn" id="8_xk3oh"]
+
+[sub_resource type="InputEventAction" id="InputEventAction_m60nv"]
+action = &"ui_accept"
+
+[sub_resource type="Shortcut" id="Shortcut_3t0rw"]
+events = [SubResource("InputEventAction_m60nv")]
+
+[sub_resource type="InputEventAction" id="InputEventAction_7vi22"]
+action = &"ui_cancel"
+
+[sub_resource type="Shortcut" id="Shortcut_jde8j"]
+events = [SubResource("InputEventAction_7vi22")]
 
 [node name="BrowsingWindow" type="Control"]
 layout_mode = 3
@@ -14,6 +30,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_wjcm8")
+transition_expand_scale = Vector2(2, 2)
 
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
@@ -57,9 +74,50 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("5_o3qxd")
 
-[node name="Button" type="Button" parent="."]
-layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
+[node name="HexAndWallSelect" parent="ModuleContainer" instance=ExtResource("1_2cpv0")]
+layout_mode = 1
+
+[node name="ShelfSelect" parent="ModuleContainer" instance=ExtResource("5_fyemg")]
+layout_mode = 1
+
+[node name="BookSelect" parent="ModuleContainer" instance=ExtResource("8_xk3oh")]
+layout_mode = 1
+
+[node name="BookInterface" parent="ModuleContainer" instance=ExtResource("8_qbme8")]
+layout_mode = 1
+
+[node name="NextButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -101.0
+offset_top = -31.0
+grow_horizontal = 0
+grow_vertical = 0
+focus_mode = 0
+theme_override_colors/font_hover_color = Color(0.259294, 0.259294, 0.259294, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 0.690196)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("8_je76m")
+theme_override_font_sizes/font_size = 24
+shortcut = SubResource("Shortcut_3t0rw")
+text = "Next (Enter)"
+flat = true
+
+[node name="BackButton" type="Button" parent="."]
+layout_mode = 1
+offset_right = 84.0
+offset_bottom = 31.0
+focus_mode = 0
+theme_override_colors/font_hover_color = Color(0.259294, 0.259294, 0.259294, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 0.690196)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("8_je76m")
+theme_override_font_sizes/font_size = 24
+shortcut = SubResource("Shortcut_jde8j")
+text = "Back (Esc)"
+flat = true
