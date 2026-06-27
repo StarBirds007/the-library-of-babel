@@ -1,11 +1,11 @@
 
-extends Control
+extends BrowsingModule
 
 @onready var page: RichTextLabel = $BookFrame/Page
 @onready var book_frame: TextureRect = $BookFrame
 @onready var page_number: LineEdit = $PageNumberLabel/PageNumber
 @onready var page_number_label: Label = $PageNumberLabel
-@onready var title_label: Label = $BookFrame/TitleLabel
+@onready var title_label: RichTextLabel = $BookFrame/TitleLabel
 @onready var left: Button = $BookFrame/Left
 @onready var right: Button = $BookFrame/Right
 @onready var copyable_address: Button = $ShowAddress/CopyableAddress
@@ -31,9 +31,6 @@ const random_frame_textures: Array = [
 
 var retrieval_thread: Thread = null
 var is_loading: bool = false
-
-signal field_selected(field_name: String, value: Variant) # Automatically emitted when current_page is set.
-signal step_ready(is_ready: bool)
 
 
 func _ready() -> void:
@@ -73,7 +70,7 @@ func _on_page_retrieved(result: Dictionary) -> void:
 	if retrieval_thread.is_alive():
 		retrieval_thread.wait_to_finish()
 	page.text = result["page"]
-	title_label.text = "Title: " + result["title"]
+	title_label.text = result["title"]
 
 	_random_frame_sprite()
 	step_ready.emit(true)

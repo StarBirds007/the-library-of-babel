@@ -1,15 +1,15 @@
-[gd_scene load_steps=24 format=3 uid="uid://bhvup4rxsvhlu"]
+[gd_scene load_steps=22 format=3 uid="uid://bhvup4rxsvhlu"]
 
-[ext_resource type="Script" path="res://Scripts/hex_and_wall_select.gd" id="1_vqyrt"]
-[ext_resource type="Shader" path="res://Scenes/UI/BrowsingWindow/offset_shader.gdshader" id="2_2obqk"]
+[ext_resource type="Script" path="res://Scripts/BrowsingModules/hex_and_wall_select.gd" id="1_vqyrt"]
+[ext_resource type="Shader" path="res://Assets/Shaders/offset_shader.gdshader" id="2_2obqk"]
 [ext_resource type="Texture2D" uid="uid://b8vy728nhx1wu" path="res://Assets/Sprite/WallSelectRandom/WallSelect.png" id="2_g078j"]
 [ext_resource type="Script" path="res://Scripts/sized_texture_rect_edit.gd" id="3_2cjp2"]
-[ext_resource type="Shader" path="res://Scenes/UI/BrowsingWindow/wall_select_triangle.gdshader" id="4_lgyc4"]
-[ext_resource type="Gradient" uid="uid://bqxvtqd73rmch" path="res://Scenes/UI/BrowsingWindow/hover_gradient.tres" id="5_4ij6q"]
+[ext_resource type="Shader" path="res://Assets/Shaders/wall_select_triangle.gdshader" id="4_lgyc4"]
+[ext_resource type="Gradient" uid="uid://bqxvtqd73rmch" path="res://Assets/Gradients/hover_gradient.tres" id="5_4ij6q"]
 [ext_resource type="Script" path="res://Scripts/wall_triangle.gd" id="6_necky"]
 [ext_resource type="Script" path="res://Scripts/wall_skewed.gd" id="7_ttioq"]
-[ext_resource type="Shader" path="res://Scenes/UI/BrowsingWindow/wall_select_skewed.gdshader" id="8_4mgp1"]
-[ext_resource type="FontFile" uid="uid://dxsjq307w2kmu" path="res://Fonts/JetBrainsMono-Bold.ttf" id="9_s0b1g"]
+[ext_resource type="Shader" path="res://Assets/Shaders/wall_select_skewed.gdshader" id="8_4mgp1"]
+[ext_resource type="FontFile" uid="uid://dxsjq307w2kmu" path="res://Assets/Fonts/JetBrainsMono-Bold.ttf" id="9_s0b1g"]
 [ext_resource type="Script" path="res://Scripts/sized_text_edit.gd" id="10_08xtm"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mrce5"]
@@ -34,11 +34,6 @@ gradient = SubResource("Gradient_vg0eu")
 gradient = ExtResource("5_4ij6q")
 fill_from = Vector2(0.5, 0)
 fill_to = Vector2(0.5, 1)
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_wwcpx"]
-shader = ExtResource("2_2obqk")
-shader_parameter/offset_x = 0.0
-shader_parameter/offset_y = 0.0
 
 [sub_resource type="Shader" id="Shader_xgmgm"]
 code = "shader_type canvas_item;
@@ -78,11 +73,6 @@ void fragment() {
 shader = SubResource("Shader_xgmgm")
 shader_parameter/skew_amount = 0.264
 shader_parameter/vertical_squish = 1.5
-shader_parameter/offset_x = 0.0
-shader_parameter/offset_y = 0.0
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_envmi"]
-shader = ExtResource("2_2obqk")
 shader_parameter/offset_x = 0.0
 shader_parameter/offset_y = 0.0
 
@@ -152,7 +142,6 @@ stretch_mode = 0
 script = ExtResource("6_necky")
 
 [node name="Wall2" type="TextureButton" parent="Hexagon"]
-material = SubResource("ShaderMaterial_wwcpx")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -195,7 +184,6 @@ stretch_mode = 0
 script = ExtResource("7_ttioq")
 
 [node name="Wall4" type="TextureButton" parent="Hexagon"]
-material = SubResource("ShaderMaterial_envmi")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -297,8 +285,6 @@ offset_right = 96.5
 offset_bottom = -25.6667
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("9_s0b1g")
 text = "Selected Wall:"
 
 [node name="HexTextEdit" type="TextEdit" parent="."]

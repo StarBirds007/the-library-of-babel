@@ -1,16 +1,14 @@
 [gd_scene load_steps=11 format=3 uid="uid://b3niwf3tt8ngi"]
 
-[ext_resource type="Script" path="res://Scripts/book_select.gd" id="1_h2dtn"]
+[ext_resource type="Script" path="res://Scripts/BrowsingModules/book_select.gd" id="1_h2dtn"]
 [ext_resource type="Texture2D" uid="uid://cem3c7cl2fgn" path="res://Assets/Sprite/BookSelect.png" id="1_s8an1"]
 [ext_resource type="Script" path="res://Scripts/sized_texture_rect_edit.gd" id="2_4tmkd"]
-[ext_resource type="Shader" path="res://Scenes/UI/BrowsingWindow/offset_shader.gdshader" id="3_b3n36"]
-[ext_resource type="Gradient" uid="uid://jwo73loxirr7" path="res://Scenes/UI/BrowsingWindow/book_gradient.tres" id="4_5vrvr"]
-[ext_resource type="FontFile" uid="uid://dxsjq307w2kmu" path="res://Fonts/JetBrainsMono-Bold.ttf" id="6_xr4vc"]
+[ext_resource type="Shader" path="res://Assets/Shaders/color_secondary.gdshader" id="3_7fxtl"]
+[ext_resource type="Gradient" uid="uid://jwo73loxirr7" path="res://Assets/Gradients/book_gradient.tres" id="4_5vrvr"]
+[ext_resource type="FontFile" uid="uid://dxsjq307w2kmu" path="res://Assets/Fonts/JetBrainsMono-Bold.ttf" id="6_xr4vc"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_f43y8"]
-shader = ExtResource("3_b3n36")
-shader_parameter/offset_x = 0.0
-shader_parameter/offset_y = 0.0
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2s8xy"]
+shader = ExtResource("3_7fxtl")
 
 [sub_resource type="Gradient" id="Gradient_vyjyt"]
 offsets = PackedFloat32Array(1)
@@ -35,6 +33,7 @@ script = ExtResource("1_h2dtn")
 selected_font = ExtResource("6_xr4vc")
 
 [node name="Shelf" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_2s8xy")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -53,7 +52,6 @@ expand_mode = 1
 script = ExtResource("2_4tmkd")
 
 [node name="Book1" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -75,7 +73,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book2" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -97,7 +94,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book3" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -119,7 +115,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book4" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -141,7 +136,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book5" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -163,7 +157,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book6" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -185,7 +178,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book7" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -207,7 +199,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book8" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -229,7 +220,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book9" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -251,7 +241,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book10" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -273,7 +262,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book11" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -295,7 +283,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book12" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -317,7 +304,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book13" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -339,7 +325,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book14" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -361,7 +346,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book15" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -383,7 +367,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book16" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -405,7 +388,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book17" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -427,7 +409,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book18" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -449,7 +430,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book19" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -471,7 +451,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book20" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -493,7 +472,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book21" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -515,7 +493,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book22" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -537,7 +514,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book23" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -559,7 +535,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book24" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -581,7 +556,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book25" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -603,7 +577,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book26" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -625,7 +598,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book27" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -647,7 +619,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book28" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -669,7 +640,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book29" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -691,7 +661,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book30" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -713,7 +682,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book31" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -735,7 +703,6 @@ ignore_texture_size = true
 stretch_mode = 0
 
 [node name="Book32" type="TextureButton" parent="Shelf"]
-material = SubResource("ShaderMaterial_f43y8")
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -769,8 +736,6 @@ offset_right = 131.0
 offset_bottom = -239.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("6_xr4vc")
 theme_override_font_sizes/font_size = 24
 text = "Selected Book: 
 Title: "

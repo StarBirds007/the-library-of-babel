@@ -1,0 +1,349 @@
+[gd_scene load_steps=19 format=3 uid="uid://cupp3j8p4hv46"]
+
+[ext_resource type="Shader" path="res://Assets/Shaders/color_secondary.gdshader" id="1_37bvk"]
+[ext_resource type="Script" path="res://Scripts/main.gd" id="1_77das"]
+[ext_resource type="Shader" path="res://Assets/Shaders/color_bg.gdshader" id="1_j11yv"]
+[ext_resource type="Texture2D" uid="uid://cc3njysq8bs2r" path="res://Assets/Sprite/Hexagon.png" id="1_mn56a"]
+[ext_resource type="Texture2D" uid="uid://da4j3qbbh038t" path="res://Assets/Sprite/HexBackground.png" id="3_ng2ds"]
+[ext_resource type="Texture2D" uid="uid://cph8oke2cvfwa" path="res://Assets/Sprite/ReverseVignette.png" id="4_watu7"]
+[ext_resource type="Script" path="res://Scripts/sized_texture_rect_edit.gd" id="5_5qwch"]
+[ext_resource type="Script" path="res://Scripts/sized_button.gd" id="8_jt3e4"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hukjm"]
+shader = ExtResource("1_j11yv")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1y2n2"]
+shader = ExtResource("1_37bvk")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mj33u"]
+shader = ExtResource("1_j11yv")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_iikwp"]
+shader = ExtResource("1_37bvk")
+
+[sub_resource type="Curve" id="Curve_2yt42"]
+min_value = -360.0
+max_value = 360.0
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 90), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_kc5bp"]
+_data = [Vector2(0, 0), 0.0, 1.6, 0, 0, Vector2(1, 2), 2.07762, 0.0, 0, 0]
+point_count = 2
+metadata/_snap_enabled = true
+
+[sub_resource type="Gradient" id="Gradient_hb6ah"]
+offsets = PackedFloat32Array(0, 0.543956, 0.722527, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0.262357, 0, 0, 0, 0.145098, 1, 1, 1, 0)
+
+[sub_resource type="Animation" id="Animation_0legm"]
+resource_name = "intro"
+length = 3.0
+step = 0.25
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Menu/MainTitle:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(348, 0), Vector2(348, 99)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Menu/MainTitle:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.5, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Menu/Buttons:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(1.75, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_1li1x"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Menu/MainTitle:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(348, 99)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Menu/MainTitle:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Menu/Buttons:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_dl8dw"]
+_data = {
+"RESET": SubResource("Animation_1li1x"),
+"intro": SubResource("Animation_0legm")
+}
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_77das")
+
+[node name="Background" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_hukjm")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Parallax2D" type="Parallax2D" parent="."]
+visible = false
+scale = Vector2(0.47803, 0.47803)
+scroll_offset = Vector2(3013, 2160)
+repeat_size = Vector2(1383, 409)
+autoscroll = Vector2(20, 40)
+repeat_times = 11
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax2D"]
+modulate = Color(1, 1, 1, 0.266667)
+material = SubResource("ShaderMaterial_1y2n2")
+texture = ExtResource("3_ng2ds")
+
+[node name="SizedTextureRect" type="TextureRect" parent="."]
+visible = false
+material = SubResource("ShaderMaterial_mj33u")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -384.0
+offset_top = -216.0
+offset_right = 384.0
+offset_bottom = 216.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.910303, 0.910303)
+pivot_offset = Vector2(960, 540)
+texture = ExtResource("4_watu7")
+script = ExtResource("5_5qwch")
+
+[node name="Menu" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Particle" type="Control" parent="Menu"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GPUParticles2D" type="CPUParticles2D" parent="Menu/Particle"]
+material = SubResource("ShaderMaterial_iikwp")
+position = Vector2(20, 16)
+amount = 6
+lifetime = 10.0
+fixed_fps = 30
+local_coords = true
+draw_order = 1
+texture = ExtResource("1_mn56a")
+gravity = Vector2(0, 0)
+angle_min = 1.0
+angle_max = 1.0
+angle_curve = SubResource("Curve_2yt42")
+scale_amount_curve = SubResource("Curve_kc5bp")
+color_ramp = SubResource("Gradient_hb6ah")
+
+[node name="MainTitle" type="Label" parent="Menu"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -228.0
+offset_top = 99.0
+offset_right = 228.0
+offset_bottom = 150.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 38
+text = "The Library Of Babel"
+
+[node name="Buttons" type="Control" parent="Menu"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Browse" type="Button" parent="Menu/Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -47.0
+offset_top = -108.0
+offset_right = 48.0
+offset_bottom = -66.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(47.5, 21)
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 24
+text = "Browse"
+flat = true
+script = ExtResource("8_jt3e4")
+
+[node name="Search" type="Button" parent="Menu/Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -47.0
+offset_top = -66.0
+offset_right = 48.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(47.5, 21)
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 24
+text = "Search"
+flat = true
+script = ExtResource("8_jt3e4")
+
+[node name="Saved" type="Button" parent="Menu/Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -47.0
+offset_top = -24.0
+offset_right = 48.0
+offset_bottom = 18.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(47.5, 21)
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 24
+text = "Saved"
+flat = true
+script = ExtResource("8_jt3e4")
+
+[node name="Options" type="Button" parent="Menu/Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -56.0
+offset_top = 18.0
+offset_right = 53.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(54.5, 21)
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 24
+text = "Options"
+flat = true
+script = ExtResource("8_jt3e4")
+
+[node name="Exit" type="Button" parent="Menu/Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -47.0
+offset_top = 60.0
+offset_right = 48.0
+offset_bottom = 102.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(47.5, 21)
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 24
+text = "Exit"
+flat = true
+script = ExtResource("8_jt3e4")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_dl8dw")
+}

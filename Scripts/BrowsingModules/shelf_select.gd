@@ -1,4 +1,4 @@
-extends Control
+extends BrowsingModule
 
 @onready var wall = $Wall
 @onready var option_button: OptionButton = $OptionButton
@@ -6,10 +6,6 @@ extends Control
 var current_shelf: int = -1
 
 signal changed_shelf(shelf: int)
-
-# Shared step contract (used by BrowsingWindow):
-signal field_selected(field_name: String, value: Variant)
-signal step_ready(is_ready: bool)
 
 var wall_buttons: Array[TextureButton]
 

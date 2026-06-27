@@ -1,8 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://cc56xlxlhssu4"]
+[gd_scene load_steps=7 format=3 uid="uid://cc56xlxlhssu4"]
 
-[ext_resource type="Script" path="res://Scripts/book_interface.gd" id="1_w5tb6"]
-[ext_resource type="FontFile" uid="uid://dxsjq307w2kmu" path="res://Fonts/JetBrainsMono-Bold.ttf" id="2_7tdlq"]
-[ext_resource type="Shader" path="res://Scenes/UI/BrowsingWindow/offset_shader.gdshader" id="2_tkuxd"]
+[ext_resource type="Script" path="res://Scripts/BrowsingModules/book_interface.gd" id="1_w5tb6"]
+[ext_resource type="FontFile" uid="uid://dxsjq307w2kmu" path="res://Assets/Fonts/JetBrainsMono-Bold.ttf" id="2_7tdlq"]
+[ext_resource type="Shader" path="res://Assets/Shaders/offset_shader.gdshader" id="2_tkuxd"]
 [ext_resource type="Texture2D" uid="uid://c6p4ldbn000go" path="res://Assets/Sprite/BookFrameRandom/BookFrameRandom2.png" id="3_655ol"]
 [ext_resource type="Script" path="res://Scripts/sized_texture_rect_edit.gd" id="3_it8rc"]
 
@@ -10,14 +10,6 @@
 shader = ExtResource("2_tkuxd")
 shader_parameter/offset_x = 0.0
 shader_parameter/offset_y = 0.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yclns"]
-draw_center = false
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0, 0, 0, 1)
 
 [node name="BookInterface" type="Control"]
 layout_mode = 3
@@ -61,8 +53,6 @@ offset_bottom = 237.5
 grow_horizontal = 2
 grow_vertical = 2
 pivot_offset = Vector2(216, 240)
-theme_override_colors/default_color = Color(0, 0, 0, 1)
-theme_override_colors/font_selected_color = Color(1, 1, 1, 1)
 theme_override_fonts/normal_font = ExtResource("2_7tdlq")
 theme_override_font_sizes/normal_font_size = 9
 text = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
@@ -122,11 +112,13 @@ offset_top = -30.5
 offset_right = -266.5
 offset_bottom = 27.75
 grow_vertical = 2
+scale = Vector2(-1, 1)
 pivot_offset = Vector2(19, 29.125)
+tooltip_text = "Previous Page"
 focus_mode = 0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+mouse_default_cursor_shape = 2
 theme_override_font_sizes/font_size = 36
-text = "⇦"
+text = "⇨"
 flat = true
 
 [node name="Right" type="Button" parent="BookFrame"]
@@ -140,28 +132,41 @@ offset_left = 263.5
 offset_top = -31.5
 offset_right = 301.5
 offset_bottom = 26.75
-grow_horizontal = 0
 grow_vertical = 2
 pivot_offset = Vector2(19, 29.125)
+tooltip_text = "Next Page"
 focus_mode = 0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+mouse_default_cursor_shape = 2
 theme_override_font_sizes/font_size = 36
 text = "⇨"
 flat = true
 
-[node name="TitleLabel" type="Label" parent="BookFrame"]
+[node name="Title" type="Label" parent="BookFrame"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -34.0
-offset_top = -27.0
+offset_top = -42.0
 offset_right = 34.0
-offset_bottom = -4.66667
+offset_bottom = -19.6667
 grow_horizontal = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("2_7tdlq")
 text = "Title: "
+
+[node name="TitleLabel" type="RichTextLabel" parent="BookFrame"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -120.5
+offset_top = -15.0
+offset_right = 119.5
+offset_bottom = 7.0
+grow_horizontal = 2
+fit_content = true
+scroll_active = false
+selection_enabled = true
 
 [node name="PageNumberLabel" type="Label" parent="."]
 layout_mode = 0
@@ -169,8 +174,6 @@ offset_left = 32.0
 offset_top = 64.0
 offset_right = 167.0
 offset_bottom = 86.3333
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("2_7tdlq")
 text = "Page     / 140"
 
 [node name="PageNumber" type="LineEdit" parent="PageNumberLabel"]
@@ -180,9 +183,6 @@ offset_top = -4.0
 offset_right = 86.3958
 offset_bottom = 26.0
 focus_mode = 1
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("2_7tdlq")
-theme_override_styles/normal = SubResource("StyleBoxFlat_yclns")
 text = "000"
 alignment = 1
 max_length = 3
@@ -197,8 +197,6 @@ offset_top = -196.0
 offset_right = 157.0
 offset_bottom = -173.667
 grow_vertical = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("2_7tdlq")
 text = "Show Address "
 
 [node name="CheckBox" type="CheckBox" parent="ShowAddress"]
@@ -217,9 +215,9 @@ offset_left = -4.0
 offset_top = 28.0
 offset_right = 148.0
 offset_bottom = 146.0
+tooltip_text = "Copy Address"
 focus_mode = 0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("2_7tdlq")
+mouse_default_cursor_shape = 2
 text = "Hex: 1234567890
 123456789012345
 Wall:

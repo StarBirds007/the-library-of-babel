@@ -1,4 +1,4 @@
-extends Control
+extends BrowsingModule
 
 @onready var shelf = $Shelf
 @onready var label: Label = $Label
@@ -16,11 +16,6 @@ var required_font_size: int = 0
 
 var retrieval_thread: Thread = null
 var is_loading: bool = false
-
-# Shared step contract (used by BrowsingWindow):
-signal field_selected(field_name: String, value: Variant)
-signal step_ready(is_ready: bool)
-
 
 func _ready() -> void:
 	for i in range(shelf.get_child_count()):
@@ -52,7 +47,7 @@ func _add_title_labels(button: TextureButton) -> void:
 	spine_label.size.y = button.size.x
 	spine_label.position.x += spine_label.size.y
 	spine_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	spine_label.add_theme_color_override("font_color", Color.BLACK)
+	# spine_label.add_theme_color_override("font_color", Color.BLACK)
 	# spine_label.set_anchors_preset(Control.PRESET_FULL_RECT, true)
 
 	if required_font_size == 0:
@@ -75,7 +70,7 @@ func _add_title_labels(button: TextureButton) -> void:
 	spine_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	spine_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
-	spine_label.add_theme_font_override("font", selected_font)
+	# spine_label.add_theme_font_override("font", selected_font)
 	spine_label.add_theme_font_size_override("font_size", required_font_size)
 
 	button.add_child(spine_label)

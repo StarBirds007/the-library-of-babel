@@ -1,4 +1,4 @@
-extends Control
+extends BrowsingModule
 
 @onready var hexagon: TextureRect = $Hexagon
 @onready var hex_text: TextEdit = $HexTextEdit
@@ -14,9 +14,6 @@ var current_hex: String = ""
 var current_wall: int = -1
 
 signal changed_wall(wall: int)
-
-signal field_selected(field_name: String, value: Variant)
-signal step_ready(is_ready: bool)
 
 const random_hex_textures: Array = [
 	preload("res://Assets/Sprite/WallSelectRandom/WallSelect.png"),

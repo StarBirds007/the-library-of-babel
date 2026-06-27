@@ -11,6 +11,7 @@ var is_transitioning: bool = false
 
 @export var transition_shrink_scale: Vector2 = Vector2(0.85, 0.85)
 @export var transition_expand_scale: Vector2 = Vector2(1.15, 1.15)
+@export var transition_duration: float = 0.2
 
 var selected_address: Dictionary = {
 	"hex": "",
@@ -23,6 +24,9 @@ const HIERARCHY = ["hex", "wall", "shelf", "book", "page"]
 
 
 func _ready() -> void:
+	get_tree().root.size_changed.connect(_on_window_size_changed)
+
+
 	back_button.pressed.connect(go_back)
 	next_button.pressed.connect(go_next)
 
@@ -49,6 +53,12 @@ func _register_step(module: Control, owned_fields: Array) -> void:
 
 	module.field_selected.connect(_on_field_selected.bind(steps.size() - 1))
 	module.step_ready.connect(_on_step_ready.bind(steps.size() - 1))
+
+
+func _on_window_size_changed():
+	for step in steps:
+		var module: Control = step["node"]
+		module.pivot_offset = module.size / 2.0
 
 
 func _on_field_selected(field_name: String, value: Variant, _step_index: int) -> void:
@@ -128,8 +138,8 @@ func _transition_out(module: Control, going_forward: bool) -> void:
 	var tween := create_tween()
 	tween.set_parallel(true)
 	tween.set_ease(Tween.EASE_IN)
-	tween.tween_property(module, "modulate:a", 0.0, 0.2)
-	tween.tween_property(module, "scale", target_scale, 0.2)
+	tween.tween_property(module, "modulate:a", 0.0, transition_duration)
+	tween.tween_property(module, "scale", target_scale, transition_duration)
 	await tween.finished
 
 	module.visible = false
@@ -147,6 +157,6 @@ func _transition_in(module: Control, going_forward: bool) -> void:
 	var tween := create_tween()
 	tween.set_parallel(true)
 	tween.set_ease(Tween.EASE_OUT)
-	tween.tween_property(module, "modulate:a", 1.0, 0.2)
-	tween.tween_property(module, "scale", Vector2.ONE, 0.2)
+	tween.tween_property(module, "modulate:a", 1.0, transition_duration)
+	tween.tween_property(module, "scale", Vector2.ONE, transition_duration)
 	await tween.finished

@@ -1,0 +1,27 @@
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://sse1updt8sm2"]
+
+[ext_resource type="FontFile" uid="uid://dxsjq307w2kmu" path="res://Assets/Fonts/JetBrainsMono-Bold.ttf" id="1_v4u2l"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jjebg"]
+draw_center = false
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 1)
+
+[resource]
+default_font = ExtResource("1_v4u2l")
+Button/colors/font_color = Color(1, 1, 1, 1)
+Button/colors/font_hover_color = Color(0.427491, 0.427494, 0.427494, 1)
+Button/fonts/font = ExtResource("1_v4u2l")
+Label/colors/font_color = Color(1, 1, 1, 1)
+Label/fonts/font = ExtResource("1_v4u2l")
+LineEdit/colors/caret_color = Color(1, 1, 1, 1)
+LineEdit/colors/font_color = Color(1, 1, 1, 1)
+LineEdit/fonts/font = ExtResource("1_v4u2l")
+LineEdit/styles/normal = SubResource("StyleBoxFlat_jjebg")
+RichTextLabel/colors/default_color = Color(1, 1, 1, 1)
+RichTextLabel/colors/font_selected_color = Color(0, 0, 0, 1)
+RichTextLabel/colors/selection_color = Color(1, 1, 1, 0.8)
+RichTextLabel/fonts/normal_font = ExtResource("1_v4u2l")

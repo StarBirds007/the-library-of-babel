@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://qux2iu3iqrah"]
 
 [ext_resource type="Script" path="res://Scripts/book_view.gd" id="1_rvqcm"]
-[ext_resource type="FontFile" uid="uid://dxsjq307w2kmu" path="res://Fonts/JetBrainsMono-Bold.ttf" id="2_cc5c5"]
+[ext_resource type="FontFile" uid="uid://dxsjq307w2kmu" path="res://Assets/Fonts/JetBrainsMono-Bold.ttf" id="2_cc5c5"]
 [ext_resource type="Script" path="res://Scripts/rich_text_label.gd" id="3_40ysi"]
 [ext_resource type="Script" path="res://Scripts/slider_label.gd" id="4_odb25"]
 
