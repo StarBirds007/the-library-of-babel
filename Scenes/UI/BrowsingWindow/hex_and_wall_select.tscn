@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://bhvup4rxsvhlu"]
+[gd_scene load_steps=21 format=3 uid="uid://bhvup4rxsvhlu"]
 
 [ext_resource type="Script" path="res://Scripts/BrowsingModules/hex_and_wall_select.gd" id="1_vqyrt"]
 [ext_resource type="Shader" path="res://Assets/Shaders/offset_shader.gdshader" id="2_2obqk"]
@@ -10,7 +10,6 @@
 [ext_resource type="Script" path="res://Scripts/wall_skewed.gd" id="7_ttioq"]
 [ext_resource type="Shader" path="res://Assets/Shaders/wall_select_skewed.gdshader" id="8_4mgp1"]
 [ext_resource type="FontFile" uid="uid://dxsjq307w2kmu" path="res://Assets/Fonts/JetBrainsMono-Bold.ttf" id="9_s0b1g"]
-[ext_resource type="Script" path="res://Scripts/sized_text_edit.gd" id="10_08xtm"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mrce5"]
 shader = ExtResource("2_2obqk")
@@ -287,25 +286,18 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "Selected Wall:"
 
-[node name="HexTextEdit" type="TextEdit" parent="."]
+[node name="HexTextEdit" type="LineEdit" parent="."]
 layout_mode = 1
-anchors_preset = 8
+anchors_preset = -1
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -153.0
-offset_top = -283.0
-offset_right = 154.0
-offset_bottom = -194.0
-grow_horizontal = 2
-grow_vertical = 2
-pivot_offset = Vector2(153.5, 44.5)
-theme_override_fonts/font = ExtResource("9_s0b1g")
-theme_override_font_sizes/font_size = 16
+offset_left = -248.0
+offset_top = -284.0
+offset_right = 256.0
+offset_bottom = -254.0
 placeholder_text = "Enter Hex (Room) Number..."
-wrap_mode = 1
-script = ExtResource("10_08xtm")
 
 [connection signal="pressed" from="Hexagon/Wall1" to="." method="_on_wall_1_pressed"]
 [connection signal="pressed" from="Hexagon/Wall2" to="." method="_on_wall_2_pressed"]
@@ -313,5 +305,4 @@ script = ExtResource("10_08xtm")
 [connection signal="pressed" from="Hexagon/Wall4" to="." method="_on_wall_4_pressed"]
 [connection signal="pressed" from="Hexagon/DoorRight" to="." method="_on_door_right_pressed"]
 [connection signal="pressed" from="Hexagon/DoorLeft" to="." method="_on_door_left_pressed"]
-[connection signal="resized" from="HexTextEdit" to="HexTextEdit" method="_on_resized"]
 [connection signal="text_changed" from="HexTextEdit" to="." method="_on_sized_text_edit_text_changed"]

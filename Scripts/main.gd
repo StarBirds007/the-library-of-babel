@@ -1,23 +1,45 @@
 extends Control
 
+var menus: Dictionary = {"Browse": preload("res://Scenes/UI/BrowsingWindow/browsing_window.tscn"),
+						 "Search": preload("res://Scenes/UI/search.tscn"),
+						 "Saved" : null,
+						 "Options" : null,
+						 "Exit" : null}
+
 @onready var main_title: Label = $Menu/MainTitle
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var buttons: Control = $Menu/Buttons
+@onready var menu: Control = $Menu
+@onready var hexagon_parallax: Parallax2D = $HexagonParallax
+@onready var hexagon_particle: CPUParticles2D = $Menu/Particle/HexagonParticle
 
-@export var character_pool: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz"
+@export var transition_duration: float = 1.0
 
+var character_pool: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz"
 var active_animations: Array[Dictionary] = []
-
+var transitioning: bool = false
+var global_address: Dictionary = {
+	"hex": "",
+	"wall": 0,
+	"shelf": 0,
+	"book": 0,
+	"page": 0
+}
 
 func _ready() -> void:
-	scramble_text(main_title, main_title.text, 40)
-	animation_player.play("intro")
-
 	for child in buttons.get_children():
 		if child is Button:
 			child.mouse_entered.connect(func scramble():
 				scramble_text(child, child.name, 50))
 
+			child.pressed.connect(func button_pressed():
+				if transitioning:
+					return
+				_transition_out(menus[child.name].instantiate()))
+
+			# child.disabled = true
+	
+	_transition_in(null, true)
 
 
 func _process(delta: float) -> void:
@@ -81,3 +103,66 @@ func _process_text_animation(anim: Dictionary, delta: float, index: int) -> void
 
 func _get_random_char() -> String:
 	return character_pool[randi() % character_pool.length()]
+
+
+func _transition_out(module: Node, open_book: bool = false, exiting_module: Node = null) -> void:
+	transitioning = true
+
+	if exiting_module:
+		exiting_module.queue_free()
+
+	if open_book:
+		module.selected_address = global_address
+		module.initial_step = 3
+
+	if module.name == "Search":
+		module.search_completed.connect(_show_searched_book)
+
+	module.exiting.connect(_transition_in)
+
+	add_child(module)
+
+	hexagon_parallax.modulate.a = 0.0
+	hexagon_parallax.visible = true
+	hexagon_particle.emitting = false
+	menu.visible = false
+
+	var tween := create_tween()
+	tween.set_parallel(true)
+	tween.set_ease(Tween.EASE_IN)
+
+	# tween.tween_property(menu, "modulate:a", 0.0, 0.1)
+	tween.tween_property(hexagon_parallax, "modulate:a", 1.0, transition_duration)
+	# tween.tween_property(module, "modulate:a", 1.0, transition_duration)
+	await tween.finished
+
+	transitioning = false
+
+
+func _transition_in(module: Control = null, intro: bool = false) -> void:
+	if transitioning:
+		return
+
+	if module:
+		module.queue_free()
+	
+	menu.visible = true
+	menu.modulate.a = 1
+	hexagon_parallax.visible = false
+	hexagon_particle.emitting = true
+	# hexagon_particle.restart()
+
+	if intro:
+		animation_player.play("intro")
+		scramble_text(main_title, main_title.text, 40)
+	else:
+		animation_player.play("RESET")
+
+	await animation_player.animation_finished
+	for child in buttons.get_children():
+		child.disabled = false
+
+
+func _show_searched_book(address: Dictionary, search_module: Node):
+	global_address = address
+	_transition_out(menus["Browse"].instantiate(), true,  search_module)

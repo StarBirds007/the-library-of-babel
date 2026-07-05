@@ -1,0 +1,135 @@
+[gd_scene load_steps=8 format=3 uid="uid://baq4tgaba57du"]
+
+[ext_resource type="Texture2D" uid="uid://b7kry0ma7hcnx" path="res://Assets/Sprite/SearchFrame.png" id="1_1jofp"]
+[ext_resource type="Script" path="res://Scripts/search.gd" id="1_7c4hk"]
+[ext_resource type="Script" path="res://Scripts/sized_text_edit.gd" id="1_e5abw"]
+[ext_resource type="Shader" path="res://Assets/Shaders/color_secondary.gdshader" id="2_5tx6b"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_15rqd"]
+shader = ExtResource("2_5tx6b")
+
+[sub_resource type="InputEventAction" id="InputEventAction_7vi22"]
+action = &"ui_cancel"
+
+[sub_resource type="Shortcut" id="Shortcut_52op1"]
+events = [SubResource("InputEventAction_7vi22")]
+
+[node name="Search" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_7c4hk")
+
+[node name="SearchFrame" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_15rqd")
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -552.0
+offset_top = -292.0
+offset_right = -40.0
+offset_bottom = 297.0
+grow_horizontal = 0
+grow_vertical = 2
+texture = ExtResource("1_1jofp")
+expand_mode = 1
+
+[node name="SearchTextEdit" type="TextEdit" parent="SearchFrame"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -221.0
+offset_top = -254.5
+offset_right = 221.0
+offset_bottom = 294.5
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(221, 274.5)
+placeholder_text = "Enter up to 448000 letters."
+autowrap_mode = 1
+script = ExtResource("1_e5abw")
+
+[node name="SearchPage" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.114722
+anchor_top = 0.627877
+anchor_right = 0.331736
+anchor_bottom = 0.654111
+offset_left = -52.16
+offset_top = -14.864
+offset_right = 51.84
+offset_bottom = 15.136
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 24
+text = "Search Page (3200 chars)"
+flat = true
+metadata/_edit_use_anchors_ = true
+
+[node name="SearchBook" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.114722
+anchor_top = 0.726642
+anchor_right = 0.35691
+anchor_bottom = 0.752877
+offset_left = -52.16
+offset_top = -14.864
+offset_right = 51.84
+offset_bottom = 15.136
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 24
+text = "Search Book (448000 chars)"
+flat = true
+metadata/_edit_use_anchors_ = true
+
+[node name="BackButton" type="Button" parent="."]
+layout_mode = 0
+offset_right = 84.0
+offset_bottom = 31.0
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 24
+shortcut = SubResource("Shortcut_52op1")
+text = "Back (Esc)"
+flat = true
+
+[node name="SearchTitleEdit" type="LineEdit" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -496.0
+offset_top = -180.0
+offset_right = -248.0
+offset_bottom = -150.0
+placeholder_text = "Enter Title (optional)"
+
+[node name="Title" type="Label" parent="SearchTitleEdit"]
+layout_mode = 0
+offset_top = -40.0
+offset_right = 83.0
+offset_bottom = -9.0
+theme_override_font_sizes/font_size = 23
+text = "Title:"
+
+[connection signal="pressed" from="SearchPage" to="." method="_on_search_page_pressed"]
+[connection signal="pressed" from="SearchBook" to="." method="_on_search_book_pressed"]
+[connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]

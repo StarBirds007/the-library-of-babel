@@ -3,7 +3,9 @@ using GDictionary = Godot.Collections.Dictionary;
 using System;
 using System.Numerics;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading.Tasks;
 
 
 
@@ -88,8 +90,8 @@ public partial class babel_math : Node
     private static string     cachedBookKey   = "";
     private static BigInteger cachedBookValue = BigInteger.Zero;
 
-    private static Dictionary<BigInteger, BigInteger> pow29Cache = new Dictionary<BigInteger, BigInteger>();
-    private static Dictionary<BigInteger, BigInteger> pow36Cache = new Dictionary<BigInteger, BigInteger>();
+    private static ConcurrentDictionary<BigInteger, BigInteger> pow29Cache = new ConcurrentDictionary<BigInteger, BigInteger>();
+    private static ConcurrentDictionary<BigInteger, BigInteger> pow36Cache = new ConcurrentDictionary<BigInteger, BigInteger>();
 
     private static readonly Random Rng = new Random();
 
@@ -186,7 +188,198 @@ public partial class babel_math : Node
 
 
 
-    public static GDictionary SearchEmptyPageRandomBook(string searchText)
+    public static GDictionary SearchFullPageRandomBook(string searchText, string title)
+    {
+        // The search text must fit within one page. If it's too long, we can't
+        // place it — throw early with a clear message.
+        if (searchText.Length > pageSize)
+            throw new ArgumentException(
+                $"Search text is {searchText.Length} characters, " +
+                $"but a page is only {pageSize} characters.");
+
+        // Step 1: Decide where the search text sits within the page.
+        int textLength = searchText.Length;
+        int randomCharCount = pageSize - textLength;
+        int leftPad = Rng.Next(0, randomCharCount + 1);   // inclusive on both ends
+        int rightPad = randomCharCount - leftPad;
+
+        // Step 2: Fill the rest of the page with random base-29 text in ONE shot.
+        // Rather than calling the RNG once per character (which would mean up to
+        // pageSize individual calls plus per-char array writes), we draw a single
+        // random BigInteger in [0, 29^randomCharCount) — exactly the same
+        // distribution as picking each of those characters independently and
+        // uniformly — then let BigIntegerToBase29 expand it to fixed-width text
+        // in one pass. This collapses "randomCharCount random picks" into one RNG
+        // draw plus one base-29 conversion.
+        string randomChars;
+        if (randomCharCount > 0)
+        {
+            BigInteger randomRange = Pow29(randomCharCount);
+            BigInteger randomValue = RandomBigInteger(randomRange);
+            randomChars = BigIntegerToBase29(randomValue, randomCharCount);
+        }
+        else
+        {
+            randomChars = string.Empty;
+        }
+
+        BenchmarkTime("Generated random page filler.");
+
+        // Step 3: Splice the search text into the random filler:
+        // [random][searchText][random] — built directly into one char array to
+        // avoid intermediate string concatenations.
+        char[] pageChars = new char[pageSize];
+
+        randomChars.AsSpan(0, leftPad).CopyTo(pageChars.AsSpan(0, leftPad));
+        searchText.AsSpan().CopyTo(pageChars.AsSpan(leftPad, textLength));
+        randomChars.AsSpan(leftPad, rightPad).CopyTo(pageChars.AsSpan(leftPad + textLength, rightPad));
+
+        string pageString = new string(pageChars);
+
+        // Step 4: Convert the page string to a BigInteger.
+        BigInteger pageNumber = Base29ToBigInteger(pageString.AsSpan());
+
+        BenchmarkTime("Converted from base-29.");
+
+        // Step 5: Choose a random target page index.
+        int targetPage      = Rng.Next(0, bookParameters["PAGES"]);
+        int offsetFromRight = (bookParameters["PAGES"] - targetPage - 1) * pageSize;
+
+        // Step 6: Generate random noise for pages below the target.
+        BigInteger bottomNoise = BigInteger.Zero;
+        if (offsetFromRight > 0)
+        {
+            BigInteger bottomRange = Pow29(offsetFromRight);
+            bottomNoise = RandomBigInteger(bottomRange);
+        }
+
+        // Step 7: Random noise for the pages strictly above the target page.
+        int pagesAbove   = targetPage;
+        BigInteger pagesAboveNoise = BuildPagesAboveNoise(pagesAbove);
+
+        // Step 8: Resolve the title — random or custom — and place it at the
+        // very top of the book number (above all 140 pages), which is exactly
+        // where GetPageAndTitleString reads it back from (totalSize - TITLE).
+        // This is separate from pagesAboveNoise because topShift only accounts
+        // for the pages below the title; bundling the title inside the noise
+        // and then shifting by topShift would land it at the wrong position.
+        int TITLE = bookParameters["TITLE"];
+        BigInteger titleValue = title == null
+            ? RandomBigInteger(Pow29(TITLE))
+            : TitleToBigInteger(title, TITLE);
+
+        BenchmarkTime("Generated noise.");
+
+        // Step 9: Combine everything into a single book number.
+        //
+        // Layout (high → low digits):
+        //   [title: TITLE digits]
+        //   [pagesAboveNoise: pagesAbove * pageSize digits]
+        //   [pageNumber: pageSize digits]
+        //   [bottomNoise: offsetFromRight digits]
+        //
+        // titleShift puts the title above all page content (= totalSize - TITLE).
+        BigInteger pageShift  = Pow29(offsetFromRight);
+        BigInteger topShift   = Pow29(offsetFromRight + pageSize);
+        BigInteger titleShift = Pow29(offsetFromRight + pageSize + pagesAbove * pageSize);
+
+        BigInteger bookNumber = (titleValue      * titleShift)
+                              + (pagesAboveNoise * topShift)
+                              + (pageNumber      * pageShift)
+                              + bottomNoise;
+
+        BenchmarkTime("Assembled book number.");
+
+        // Step 9: Unscramble the book number with the LCG.
+        bookNumber = BitFlip.Flip(bookNumber);
+        bookNumber = LCG.Scramble(bookNumber, reverse: true);
+
+        BenchmarkTime("Unscrambled and flipped book number.");
+
+        // Step 10: Convert the book number into an address.
+        GDictionary result = BookNumberToAddress(bookNumber);
+        result["page"] = targetPage;
+
+        BenchmarkTime("Converted book number to address.");
+
+        return result;
+    }
+
+
+
+    public static GDictionary SearchBook(string searchText, string title)
+    {
+        int PAGES = bookParameters["PAGES"];
+        int bookCapacity = PAGES * pageSize;   // Full book, excluding the title.
+
+        // Unlike the single-page search functions, SearchBook can use the
+        // entire book's worth of pages — there's no "random target page"
+        // here, since the text always starts on page 1 and the whole book
+        // is fully determined by it.
+        if (searchText.Length > bookCapacity)
+            throw new ArgumentException(
+                $"Search text is {searchText.Length} characters, " +
+                $"but a book can only hold {bookCapacity} characters.");
+
+        // Step 1: Build the entire book's page content as one string:
+        // [searchText][spaces for the rest of the book]. Built directly into
+        // one pre-sized char array — no intermediate concatenation of a
+        // 448,000-character string.
+        int textLength = searchText.Length;
+
+        char[] bookChars = new char[bookCapacity];
+
+        searchText.AsSpan().CopyTo(bookChars.AsSpan(0, textLength));
+        for (int i = textLength; i < bookCapacity; i++)
+            bookChars[i] = ' ';
+
+        string bookString = new string(bookChars);
+
+        BenchmarkTime("Built book page content.");
+
+        // Step 2: Convert the entire book's page content to a BigInteger.
+        // Base29ToBigInteger already splits large inputs divide-and-conquer
+        // style, so this scales well even at the full 448,000-character size.
+        BigInteger pagesValue = Base29ToBigInteger(bookString.AsSpan());
+
+        BenchmarkTime("Converted book pages from base-29.");
+
+        // Step 3: Resolve the title — custom or random — for the TITLE-digit
+        // slice above all the pages.
+        int TITLE = bookParameters["TITLE"];
+        BigInteger titleValue = title == null
+            ? RandomBigInteger(Pow29(TITLE))
+            : TitleToBigInteger(title, TITLE);
+
+        BenchmarkTime("Resolved title.");
+
+        // Step 4: Combine title and pages into the full book number.
+        // The title occupies the highest TITLE digits, with all the page
+        // content below it — there's no "noise above/below a target page"
+        // to account for here, since the book is fully determined.
+        BigInteger bookNumber = (titleValue * Pow29(bookCapacity)) + pagesValue;
+
+        BenchmarkTime("Assembled book number.");
+
+        // Step 5: Unscramble the book number with the LCG.
+        bookNumber = BitFlip.Flip(bookNumber);
+        bookNumber = LCG.Scramble(bookNumber, reverse: true);
+
+        BenchmarkTime("Unscrambled and flipped book number.");
+
+        // Step 6: Convert the book number into an address. The text always
+        // starts on the first page.
+        GDictionary result = BookNumberToAddress(bookNumber);
+        result["page"] = 0;
+
+        BenchmarkTime("Converted book number to address.");
+
+        return result;
+    }
+
+
+
+    public static GDictionary SearchEmptyPageRandomBook(string searchText, string title)
     {
         // The search text must fit within one page. If it's too long, we can't
         // place it — throw early with a clear message.
@@ -233,31 +426,38 @@ public partial class babel_math : Node
             bottomNoise = RandomBigInteger(bottomRange);
         }
 
-        // Step 5: Generate random noise for pages above the target.
-        int    pagesAbove  = targetPage;
-        int    topWidth    = (pagesAbove * pageSize) + (int)global_values.Get("TITLE");  // in base-29 digits
+        // Step 5: Random noise for the pages strictly above the target page.
+        int pagesAbove = targetPage;
+        BigInteger pagesAboveNoise = BuildPagesAboveNoise(pagesAbove);
 
-        BigInteger topNoise = BigInteger.Zero;
-        if (topWidth > 0)
-        {
-            BigInteger topRange = BigInteger.Pow(29, topWidth);
-            topNoise = RandomBigInteger(topRange);
-        }
+        // Step 6: Resolve the title — random or custom — and place it at
+        // the very top of the book number, same as SearchFullPageRandomBook.
+        int TITLE = bookParameters["TITLE"];
+        BigInteger titleValue = title == null
+            ? RandomBigInteger(Pow29(TITLE))
+            : TitleToBigInteger(title, TITLE);
 
         BenchmarkTime("Generated noise.");
 
-        // Step 6: Combine everything into a single book number.
-        // We add the numbers by multiplying them by the appropriate powers of 29 to shift them into place, then summing:
-        BigInteger pageShift = BigInteger.Pow(29, offsetFromRight);
-        BigInteger topShift  = BigInteger.Pow(29, offsetFromRight + pageSize);
+        // Step 7: Combine everything into a single book number.
+        //
+        // Layout (high → low digits):
+        //   [title: TITLE digits]
+        //   [pagesAboveNoise: pagesAbove * pageSize digits]
+        //   [pageNumber: pageSize digits]
+        //   [bottomNoise: offsetFromRight digits]
+        BigInteger pageShift  = BigInteger.Pow(29, offsetFromRight);
+        BigInteger topShift   = BigInteger.Pow(29, offsetFromRight + pageSize);
+        BigInteger titleShift = BigInteger.Pow(29, offsetFromRight + pageSize + pagesAbove * pageSize);
 
-        BigInteger bookNumber = (topNoise * topShift)
-                              + (pageNumber * pageShift)
+        BigInteger bookNumber = (titleValue      * titleShift)
+                              + (pagesAboveNoise * topShift)
+                              + (pageNumber      * pageShift)
                               + bottomNoise;
 
         BenchmarkTime("Assembled book number.");
 
-        // Step 7: Unscramble the book number with the LCG.
+        // Step 8: Unscramble the book number with the LCG.
         bookNumber = BitFlip.Flip(bookNumber);
         bookNumber = LCG.Scramble(bookNumber, reverse: true);
 
@@ -274,35 +474,57 @@ public partial class babel_math : Node
 
 
 
-public static string[] MassTitleRetrieval(GDictionary address)
-{
-    int BOOKS = bookParameters["BOOKS"];
-    int TITLE = bookParameters["TITLE"];
-
-    string[] titles = new string[BOOKS];
-
-    GDictionary baseAddress = address;
-    baseAddress["book"] = 0;
-
-    BigInteger baseValue = AddressToBookNumber(baseAddress);
-
-
-    int titleOffset = totalSize - TITLE;
-
-    for (int i = 0; i < BOOKS; i++)
+    public static string[] MassTitleRetrieval(GDictionary address)
     {
-        BigInteger bookValue = baseValue + i;
+        int BOOKS = bookParameters["BOOKS"];
+        int TITLE = bookParameters["TITLE"];
 
-        bookValue = LCG.Scramble(bookValue);
-        bookValue = BitFlip.Flip(bookValue);
+        string[] titles = new string[BOOKS];
 
-        BigInteger titleValue = ExtractRegion(bookValue, titleOffset);
+        GDictionary baseAddress = address;
+        baseAddress["book"] = 0;
 
-        titles[i] = RemoveLeadingAndEndingSpaces(BigIntegerToBase29(titleValue, TITLE));
+        BigInteger baseValue = AddressToBookNumber(baseAddress);
+
+        int titleOffset = totalSize - TITLE;
+
+        // Loop-invariant: every book divides by the exact same power of 29 to reach
+        // the title digits, and uses the exact same LCG constants. Compute these ONCE
+        // outside the loop instead of re-deriving / re-looking-up them per book.
+        BigInteger divisor = Pow29(titleOffset);
+        BigInteger a = LCG.a;
+        BigInteger c = LCG.c;
+        BigInteger m = LCG.m;
+
+        BenchmarkTime("Prepared shared scramble constants.");
+
+        // Each book's title is fully independent of every other book's title, so the
+        // BigInteger-heavy work (modular multiply, bit flips, division) parallelizes
+        // cleanly across cores instead of running BOOKS times on a single thread.
+        Parallel.For(0, BOOKS, i =>
+        {
+            BigInteger bookValue = baseValue + i;
+
+            // Inlined LCG.Scramble (avoids re-fetching static fields per call and
+            // lets us reuse the locals captured above).
+            bookValue = (a * bookValue + c) % m;
+
+            // Inlined BitFlip.Flip — still O(bitsToFlip) on the full-width value,
+            // which is unavoidable since the flip swaps specific high/low bit pairs.
+            bookValue = BitFlip.Flip(bookValue);
+
+            // Only the division survives as genuinely large-number work; it can't be
+            // avoided since base-29 isn't a power of 2, but we now do it against a
+            // pre-resolved divisor instead of re-walking Pow29's cache every time.
+            BigInteger titleValue = bookValue / divisor;
+
+            titles[i] = RemoveLeadingAndEndingSpaces(BigIntegerToBase29(titleValue, TITLE));
+        });
+
+        BenchmarkTime("Computed all titles in parallel.");
+
+        return titles;
     }
-
-    return titles;
-}
 
 
     // Helper methods
@@ -312,6 +534,33 @@ public static string[] MassTitleRetrieval(GDictionary address)
         BigInteger shifted = value / Pow29(offsetFromRight);
 
         return shifted;
+    }
+
+
+
+    // Builds random noise for the pages strictly above the target page.
+    // Title placement is handled separately by the caller, so the title
+    // is always placed at the correct absolute position in the book number
+    // regardless of which page was chosen as the target.
+    private static BigInteger BuildPagesAboveNoise(int pagesAbove)
+    {
+        if (pagesAbove <= 0)
+            return BigInteger.Zero;
+
+        BigInteger range = Pow29(pagesAbove * pageSize);
+        return RandomBigInteger(range);
+    }
+
+
+
+    private static BigInteger TitleToBigInteger(string title, int TITLE)
+    {
+        if (title.Length > TITLE)
+            throw new ArgumentException(
+                $"Title is {title.Length} characters, but a title can only be {TITLE} characters.");
+
+        string padded = title.PadLeft(TITLE, ' ');
+        return Base29ToBigInteger(padded.AsSpan());
     }
 
 
@@ -350,23 +599,10 @@ public static string[] MassTitleRetrieval(GDictionary address)
 
     private static string RemoveLeadingAndEndingSpaces(string input)
     {
-        int i = 0;
-        while (i < input.Length && input[i] == ' ')
-            i++;
-        
-        char[] charArray = input.Substring(i).ToCharArray();
-        Array.Reverse(charArray);
-        input = new string(charArray);
-
-        i = 0;
-        while (i < input.Length && input[i] == ' ')
-            i++;
-
-        charArray = input.Substring(i).ToCharArray();
-        Array.Reverse(charArray);
-        input = new string(charArray);
-
-        return input;
+        // Equivalent to the old double-reverse/substring dance, but without the
+        // char-array allocations and reversals — string.Trim handles both ends
+        // in a single pass.
+        return input.Trim(' ');
     }
 
 

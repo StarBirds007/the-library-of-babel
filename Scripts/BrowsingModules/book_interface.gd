@@ -61,6 +61,10 @@ func generate_page(imported_page: int = -1) -> void:
 		retrieval_thread.wait_to_finish()
 
 	retrieval_thread = Thread.new()
+	retrieval_thread.start(_generating_process)
+
+
+func _generating_process():
 	GlobalValues.debug_time = Time.get_ticks_msec()
 	var result: Dictionary = BabelMath.GetPageAndTitleString(stored_address)
 	call_deferred("_on_page_retrieved", result)
@@ -70,7 +74,7 @@ func _on_page_retrieved(result: Dictionary) -> void:
 	if retrieval_thread.is_alive():
 		retrieval_thread.wait_to_finish()
 	page.text = result["page"]
-	title_label.text = result["title"]
+	title_label.text = "[center]" + result["title"] + "[/center]"
 
 	_random_frame_sprite()
 	step_ready.emit(true)

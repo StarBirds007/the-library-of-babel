@@ -6,6 +6,7 @@ extends Control
 @onready var next_button: Button = $NextButton
 
 var steps: Array[Dictionary] = []
+@export var initial_step: int = 0
 var current_index: int = -1
 var is_transitioning: bool = false
 
@@ -13,7 +14,9 @@ var is_transitioning: bool = false
 @export var transition_expand_scale: Vector2 = Vector2(1.15, 1.15)
 @export var transition_duration: float = 0.2
 
-var selected_address: Dictionary = {
+signal exiting
+
+@export var selected_address: Dictionary = {
 	"hex": "",
 	"wall": 0,
 	"shelf": 0,
@@ -41,7 +44,7 @@ func _ready() -> void:
 		module.process_mode = Node.PROCESS_MODE_DISABLED
 		module.pivot_offset = module.size / 2.0
 
-	_enter_step(0, true)
+	_enter_step(initial_step, true)
 
 
 func _register_step(module: Control, owned_fields: Array) -> void:
@@ -100,6 +103,7 @@ func go_back() -> void:
 	if is_transitioning:
 		return
 	if current_index <= 0:
+		exiting.emit(self)
 		return
 
 	_enter_step(current_index - 1, false)
@@ -126,7 +130,8 @@ func _enter_step(target_index: int, going_forward: bool) -> void:
 	await _transition_in(new_module, going_forward)
 
 	is_transitioning = false
-	back_button.disabled = (current_index == 0)
+
+	back_button.disabled = false
 	next_button.disabled = not new_step["ready"] and not steps[current_index]["node"].name == "BookInterface"
 	next_button.text = "Get Page" if steps[current_index]["node"].name == "BookInterface" else "Next (Enter)"
 

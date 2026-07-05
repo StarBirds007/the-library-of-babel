@@ -1,8 +1,16 @@
-[gd_resource type="Theme" load_steps=3 format=3 uid="uid://bevv626tp1mxq"]
+[gd_resource type="Theme" load_steps=4 format=3 uid="uid://bevv626tp1mxq"]
 
 [ext_resource type="FontFile" uid="uid://dxsjq307w2kmu" path="res://Assets/Fonts/JetBrainsMono-Bold.ttf" id="1_v2hn6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2chtw"]
+draw_center = false
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.847059, 0.760784, 0.541176, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8vrpv"]
 draw_center = false
 border_width_left = 1
 border_width_top = 1
@@ -19,9 +27,17 @@ Label/colors/font_color = Color(0.847059, 0.760784, 0.541176, 1)
 Label/fonts/font = ExtResource("1_v2hn6")
 LineEdit/colors/caret_color = Color(0.847059, 0.760784, 0.541176, 1)
 LineEdit/colors/font_color = Color(0.847059, 0.760784, 0.541176, 1)
+LineEdit/colors/selection_color = Color(0.156863, 0.156863, 0.156863, 0.8)
 LineEdit/fonts/font = ExtResource("1_v2hn6")
 LineEdit/styles/normal = SubResource("StyleBoxFlat_2chtw")
 RichTextLabel/colors/default_color = Color(0.847059, 0.760784, 0.541176, 1)
 RichTextLabel/colors/font_selected_color = Color(1, 1, 1, 1)
 RichTextLabel/colors/selection_color = Color(0.158472, 0.158472, 0.158472, 0.8)
 RichTextLabel/fonts/normal_font = ExtResource("1_v2hn6")
+TextEdit/colors/caret_color = Color(0.847059, 0.760784, 0.541176, 1)
+TextEdit/colors/font_color = Color(0.847059, 0.760784, 0.541176, 1)
+TextEdit/colors/font_placeholder_color = Color(0.847059, 0.760784, 0.541176, 0.666667)
+TextEdit/colors/font_selected_color = Color(0.956863, 0.956863, 0.956863, 1)
+TextEdit/colors/selection_color = Color(0.156863, 0.156863, 0.156863, 0.8)
+TextEdit/fonts/font = ExtResource("1_v2hn6")
+TextEdit/styles/normal = SubResource("StyleBoxFlat_8vrpv")

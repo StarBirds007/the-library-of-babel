@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=3 format=3 uid="uid://sse1updt8sm2"]
+[gd_resource type="Theme" load_steps=4 format=3 uid="uid://sse1updt8sm2"]
 
 [ext_resource type="FontFile" uid="uid://dxsjq307w2kmu" path="res://Assets/Fonts/JetBrainsMono-Bold.ttf" id="1_v4u2l"]
 
@@ -9,6 +9,13 @@ border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
 border_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uuupi"]
+draw_center = false
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
 
 [resource]
 default_font = ExtResource("1_v4u2l")
@@ -25,3 +32,7 @@ RichTextLabel/colors/default_color = Color(1, 1, 1, 1)
 RichTextLabel/colors/font_selected_color = Color(0, 0, 0, 1)
 RichTextLabel/colors/selection_color = Color(1, 1, 1, 0.8)
 RichTextLabel/fonts/normal_font = ExtResource("1_v4u2l")
+TextEdit/colors/font_color = Color(1, 1, 1, 1)
+TextEdit/colors/font_selected_color = Color(0, 0, 0, 1)
+TextEdit/colors/selection_color = Color(1, 1, 1, 0.8)
+TextEdit/styles/normal = SubResource("StyleBoxFlat_uuupi")
