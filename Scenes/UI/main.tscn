@@ -154,7 +154,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_77das")
-transition_duration = null
 
 [node name="Background" type="ColorRect" parent="."]
 material = SubResource("ShaderMaterial_hukjm")

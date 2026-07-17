@@ -20,6 +20,7 @@ var current_page: int:
 		stored_address["page"] = value
 var regex: RegEx = RegEx.new()
 var stored_address: Dictionary
+var current_book_title: String = ""
 
 const random_frame_textures: Array = [
 	preload("res://Assets/Sprite/BookFrameRandom/BookFrameRandom.png"),
@@ -75,6 +76,7 @@ func _on_page_retrieved(result: Dictionary) -> void:
 		retrieval_thread.wait_to_finish()
 	page.text = result["page"]
 	title_label.text = "[center]" + result["title"] + "[/center]"
+	current_book_title = result["title"]
 
 	_random_frame_sprite()
 	step_ready.emit(true)
@@ -185,7 +187,13 @@ func _on_check_box_toggled(toggled_on:bool) -> void:
 
 func _on_copyable_address_pressed() -> void:
 	var text_to_copy = "%s:%s:%s:%s:%s" % [stored_address["hex"], stored_address["wall"] + 1,\
-	                                       stored_address["shelf"] + 1, stored_address["book"] + 1,\
+										   stored_address["shelf"] + 1, stored_address["book"] + 1,\
 										   stored_address["page"] + 1]
 	DisplayServer.clipboard_set(text_to_copy)
 	copyable_address.text = copyable_address.text + "\nAddress Copied!"
+
+
+func _on_save_book_pressed() -> void:
+	var temp_dict: Dictionary = stored_address.duplicate()
+	temp_dict["title"] = current_book_title
+	SaveManager.add_address(temp_dict)

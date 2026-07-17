@@ -229,8 +229,18 @@ Book:"
 flat = true
 alignment = 0
 
+[node name="SaveBook" type="Button" parent="ShowAddress"]
+layout_mode = 0
+offset_top = 448.0
+offset_right = 143.0
+offset_bottom = 478.0
+mouse_default_cursor_shape = 2
+text = "Save This Book"
+flat = true
+
 [connection signal="pressed" from="BookFrame/Left" to="." method="_on_left_pressed"]
 [connection signal="pressed" from="BookFrame/Right" to="." method="_on_right_pressed"]
 [connection signal="gui_input" from="PageNumberLabel/PageNumber" to="." method="_on_page_number_gui_input"]
 [connection signal="text_changed" from="PageNumberLabel/PageNumber" to="." method="_on_page_number_text_changed"]
 [connection signal="toggled" from="ShowAddress/CheckBox" to="." method="_on_check_box_toggled"]
+[connection signal="pressed" from="ShowAddress/SaveBook" to="." method="_on_save_book_pressed"]

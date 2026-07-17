@@ -518,7 +518,7 @@ public partial class babel_math : Node
             // pre-resolved divisor instead of re-walking Pow29's cache every time.
             BigInteger titleValue = bookValue / divisor;
 
-            titles[i] = RemoveLeadingAndEndingSpaces(BigIntegerToBase29(titleValue, TITLE));
+            titles[i] = BigIntegerToBase29(titleValue, TITLE).Trim(' ');
         });
 
         BenchmarkTime("Computed all titles in parallel.");
@@ -586,29 +586,7 @@ public partial class babel_math : Node
 
 
 
-    private static string RemoveLeadingZeros(string input)
-    {
-        int i = 0;
-        while (i < input.Length && input[i] == '0')
-            i++;
-
-        return input.Substring(i);
-    }
-
-
-
-    private static string RemoveLeadingAndEndingSpaces(string input)
-    {
-        // Equivalent to the old double-reverse/substring dance, but without the
-        // char-array allocations and reversals — string.Trim handles both ends
-        // in a single pass.
-        return input.Trim(' ');
-    }
-
-
-
     private static (BigInteger gcd, BigInteger x, BigInteger y) ExtendedGcd(BigInteger a, BigInteger m)   // Returns (gcd, x, y) such that a*x + m*y = gcd
-
     {
         if (m == 0)
             return (a, 1, 0);
@@ -703,7 +681,7 @@ public partial class babel_math : Node
         int shelfIndex = (int)shelfRemainder;
         int wallIndex  = (int)wallRemainder;
 
-        string hexString = RemoveLeadingZeros(BigIntegerToBase36(hexValue, PAGES * WORDS * LINES));
+        string hexString = BigIntegerToBase36(hexValue, PAGES * WORDS * LINES);
 
         return new GDictionary
         {
@@ -775,7 +753,7 @@ public partial class babel_math : Node
         
         lowStr = lowStr.PadLeft(k, '0');
 
-        return highStr + lowStr;
+        return (highStr + lowStr).TrimStart('0');
     }
 
 

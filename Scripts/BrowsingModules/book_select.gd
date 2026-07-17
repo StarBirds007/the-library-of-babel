@@ -29,7 +29,7 @@ func _ready() -> void:
 
 func prepare(address: Dictionary) -> void:
 	current_book = address["book"]
-	print(current_book)
+
 	step_ready.emit(false)
 	_set_loading(true)
 
@@ -109,3 +109,6 @@ func _on_book_pressed(i: int) -> void:
 	step_ready.emit(true)
 	label.text = "Selected Book: " + str(i + 1) + "\nTitle: " + titles[i]
 
+
+func _exit_tree():
+	pass

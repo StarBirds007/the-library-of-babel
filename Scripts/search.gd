@@ -1,6 +1,6 @@
 extends Control
 
-@onready var search_text_edit: TextEdit = $SearchFrame/SearchTextEdit
+@onready var search_text_edit: VirtualTextEdit = $SearchFrame/SearchTextEdit
 @onready var search_page: Button = $SearchPage
 @onready var back_button: Button = $BackButton
 @onready var search_title_edit: LineEdit = $SearchTitleEdit
@@ -11,7 +11,7 @@ var search_thread := Thread.new()
 const MAX_SEARCH_LENGTH: int = GlobalValues.PAGES * GlobalValues.LINES * GlobalValues.WORDS
 
 signal exiting
-signal search_completed
+signal open_book
 
 
 # Called when the node enters the scene tree for the first time.
@@ -19,7 +19,7 @@ func _ready() -> void:
 	search_title_edit.max_length = GlobalValues.TITLE
 	search_title_edit.text_changed.connect(_on_search_title_changed)
 	search_text_edit.text_changed.connect(_on_search_text_changed)
-	regex.compile("[^a-z ,\\.]+")
+	regex.compile("[^a-zA-Z ,\\.]+")
 
 
 func _set_loading(loading: bool) -> void:
@@ -31,8 +31,8 @@ func _set_loading(loading: bool) -> void:
 
 func _on_search_title_changed(input: String) -> void:
 	var caret_pos: int = search_title_edit.get_caret_column()
-	input = input.to_lower()
 	var filtered: String = regex.sub(input, "", true)
+	filtered = filtered.to_lower()
 
 	if filtered != input:
 		search_title_edit.text = filtered
@@ -48,11 +48,11 @@ func _on_search_text_changed() -> void:
 		input = input.left(MAX_SEARCH_LENGTH)
 		search_text_edit.set_caret_column(MAX_SEARCH_LENGTH)
 
-	input = input.to_lower()
 	print("input: %s" % input)
 	var caret_pos: int = search_text_edit.get_caret_column() 
 
 	var filtered: String = regex.sub(input, "", true)
+	filtered = filtered.to_lower()
 	print("filtered: %s" % filtered)
 	if filtered != input:
 		search_text_edit.text = filtered
@@ -93,7 +93,7 @@ func _search_process(page_only: bool):
 func _on_search_completed(result: Dictionary):
 	if search_thread.is_alive():
 		search_thread.wait_to_finish()
-	search_completed.emit(result, self)
+	open_book.emit(result, self)
 	_set_loading.call_deferred(false)
 	# print(result)
 

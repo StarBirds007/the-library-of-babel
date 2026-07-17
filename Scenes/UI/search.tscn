@@ -2,8 +2,8 @@
 
 [ext_resource type="Texture2D" uid="uid://b7kry0ma7hcnx" path="res://Assets/Sprite/SearchFrame.png" id="1_1jofp"]
 [ext_resource type="Script" path="res://Scripts/search.gd" id="1_7c4hk"]
-[ext_resource type="Script" path="res://Scripts/sized_text_edit.gd" id="1_e5abw"]
 [ext_resource type="Shader" path="res://Assets/Shaders/color_secondary.gdshader" id="2_5tx6b"]
+[ext_resource type="Script" path="res://Scripts/virtual_text_edit.gd" id="5_fvof0"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_15rqd"]
 shader = ExtResource("2_5tx6b")
@@ -40,7 +40,8 @@ grow_vertical = 2
 texture = ExtResource("1_1jofp")
 expand_mode = 1
 
-[node name="SearchTextEdit" type="TextEdit" parent="SearchFrame"]
+[node name="SearchTextEdit" type="Control" parent="SearchFrame"]
+clip_contents = true
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -53,10 +54,12 @@ offset_right = 221.0
 offset_bottom = 294.5
 grow_horizontal = 2
 grow_vertical = 2
-pivot_offset = Vector2(221, 274.5)
-placeholder_text = "Enter up to 448000 letters."
-autowrap_mode = 1
-script = ExtResource("1_e5abw")
+pivot_offset = Vector2(221, 274)
+focus_mode = 2
+mouse_default_cursor_shape = 1
+script = ExtResource("5_fvof0")
+caret_type = 1
+wrap_mode = 1
 
 [node name="SearchPage" type="Button" parent="."]
 layout_mode = 1

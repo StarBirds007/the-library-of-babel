@@ -1,0 +1,61 @@
+[gd_scene load_steps=4 format=3 uid="uid://dhdik2wm7gyhb"]
+
+[ext_resource type="Texture2D" uid="uid://o6mf65ob71ol" path="res://Assets/Sprite/DeleteIcon.png" id="1_8tv7d"]
+[ext_resource type="Script" path="res://Scripts/saved_address.gd" id="1_mm853"]
+[ext_resource type="Texture2D" uid="uid://dov8fmocwji8r" path="res://Assets/icon.png" id="2_iam6e"]
+
+[node name="MarginContainer" type="MarginContainer"]
+anchors_preset = -1
+anchor_right = 0.735
+anchor_bottom = 0.114
+offset_right = 0.279968
+offset_bottom = 0.127998
+size_flags_horizontal = 4
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_right = 32
+script = ExtResource("1_mm853")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="IndexLabel" type="Label" parent="HBoxContainer"]
+modulate = Color(1, 1, 1, 0.560784)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "0
+"
+
+[node name="Spacer" type="Control" parent="HBoxContainer"]
+custom_minimum_size = Vector2(32, 0)
+layout_mode = 2
+
+[node name="Title" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Title: "
+
+[node name="TitleLabel" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "1234567890123456789012345"
+
+[node name="Spacer2" type="Control" parent="HBoxContainer"]
+custom_minimum_size = Vector2(32, 0)
+layout_mode = 2
+
+[node name="OpenButton" type="TextureButton" parent="HBoxContainer"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("2_iam6e")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="DeleteButton" type="TextureButton" parent="HBoxContainer"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("1_8tv7d")
+ignore_texture_size = true
+stretch_mode = 0

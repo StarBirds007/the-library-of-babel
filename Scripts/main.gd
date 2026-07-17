@@ -2,7 +2,7 @@ extends Control
 
 var menus: Dictionary = {"Browse": preload("res://Scenes/UI/BrowsingWindow/browsing_window.tscn"),
 						 "Search": preload("res://Scenes/UI/search.tscn"),
-						 "Saved" : null,
+						 "Saved" : preload("res://Scenes/UI/saved.tscn"),
 						 "Options" : null,
 						 "Exit" : null}
 
@@ -115,8 +115,8 @@ func _transition_out(module: Node, open_book: bool = false, exiting_module: Node
 		module.selected_address = global_address
 		module.initial_step = 3
 
-	if module.name == "Search":
-		module.search_completed.connect(_show_searched_book)
+	if "open_book" in module:
+		module.open_book.connect(_show_searched_book)
 
 	module.exiting.connect(_transition_in)
 

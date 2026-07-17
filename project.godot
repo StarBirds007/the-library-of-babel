@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 GlobalValues="*res://Scripts/global_values.gd"
 BabelMath="*res://Scripts/babel_math.cs"
 Themes="*res://Scripts/themes.gd"
+SaveManager="*res://Scripts/save_manager.gd"
 
 [display]
 
