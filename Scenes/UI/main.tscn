@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://cupp3j8p4hv46"]
+[gd_scene load_steps=20 format=3 uid="uid://cupp3j8p4hv46"]
 
 [ext_resource type="Shader" path="res://Assets/Shaders/color_secondary.gdshader" id="1_37bvk"]
 [ext_resource type="Script" path="res://Scripts/main.gd" id="1_77das"]
@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://cph8oke2cvfwa" path="res://Assets/Sprite/ReverseVignette.png" id="4_watu7"]
 [ext_resource type="Script" path="res://Scripts/sized_texture_rect_edit.gd" id="5_5qwch"]
 [ext_resource type="Script" path="res://Scripts/sized_button.gd" id="8_jt3e4"]
+[ext_resource type="PackedScene" uid="uid://dlnryjyrqvj52" path="res://Scenes/audio_manager.tscn" id="9_wdnq1"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_hukjm"]
 shader = ExtResource("1_j11yv")
@@ -369,3 +370,5 @@ script = ExtResource("8_jt3e4")
 libraries = {
 "": SubResource("AnimationLibrary_dl8dw")
 }
+
+[node name="AudioManager" parent="." instance=ExtResource("9_wdnq1")]

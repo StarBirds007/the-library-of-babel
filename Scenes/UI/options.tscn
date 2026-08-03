@@ -1,0 +1,117 @@
+[gd_scene load_steps=6 format=3 uid="uid://cbxbof3tdqqn4"]
+
+[ext_resource type="Script" path="res://Scripts/options.gd" id="1_g7xrh"]
+
+[sub_resource type="InputEventAction" id="InputEventAction_7vi22"]
+action = &"ui_cancel"
+
+[sub_resource type="Shortcut" id="Shortcut_edwvv"]
+events = [SubResource("InputEventAction_7vi22")]
+
+[sub_resource type="InputEventAction" id="InputEventAction_m60nv"]
+action = &"ui_accept"
+
+[sub_resource type="Shortcut" id="Shortcut_mtwt8"]
+events = [SubResource("InputEventAction_m60nv")]
+
+[node name="Options" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_g7xrh")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+offset_left = 320.0
+offset_top = 192.0
+offset_right = 840.0
+offset_bottom = 464.0
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 1
+
+[node name="Resolution" type="Label" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Resolution"
+
+[node name="ResolutionOptions" type="OptionButton" parent="ScrollContainer/VBoxContainer/Resolution"]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -32.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="FullScreen" type="Label" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "FullScreen
+"
+
+[node name="FullScreenButton" type="Button" parent="ScrollContainer/VBoxContainer/FullScreen"]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -8.0
+grow_horizontal = 0
+grow_vertical = 2
+text = " ON "
+
+[node name="Theme" type="Label" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Theme"
+
+[node name="ThemeOptions" type="OptionButton" parent="ScrollContainer/VBoxContainer/Theme"]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -32.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="BackButton" type="Button" parent="."]
+offset_right = 84.0
+offset_bottom = 31.0
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 24
+shortcut = SubResource("Shortcut_edwvv")
+text = "Back (Esc)"
+flat = true
+
+[node name="ApplyButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -101.0
+offset_top = -31.0
+grow_horizontal = 0
+grow_vertical = 0
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 24
+shortcut = SubResource("Shortcut_mtwt8")
+text = "Apply (Enter)"
+flat = true
+
+[connection signal="pressed" from="ScrollContainer/VBoxContainer/FullScreen/FullScreenButton" to="." method="_on_full_screen_button_pressed"]
+[connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="ApplyButton" to="." method="_on_apply_button_pressed"]

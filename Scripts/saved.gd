@@ -34,8 +34,11 @@ func _on_delete_address(index: int) -> void:
 
 
 func _on_visit_address(index: int) -> void:
-	open_book.emit(saved_addresses[index], self)
+	var output_address: Dictionary = saved_addresses[index].duplicate()
+	output_address.erase("title")
+	open_book.emit(output_address, self)
 
 
 func _on_back_button_pressed() -> void:
+	AudioManager.create_audio(SoundEffect.SOUND_EFFECT_TYPE.BACK)
 	exiting.emit(self)

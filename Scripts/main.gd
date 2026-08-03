@@ -1,10 +1,10 @@
 extends Control
 
-var menus: Dictionary = {"Browse": preload("res://Scenes/UI/BrowsingWindow/browsing_window.tscn"),
-						 "Search": preload("res://Scenes/UI/search.tscn"),
-						 "Saved" : preload("res://Scenes/UI/saved.tscn"),
-						 "Options" : null,
-						 "Exit" : null}
+var menus: Dictionary = {"Browse"  : preload("res://Scenes/UI/BrowsingWindow/browsing_window.tscn"),
+						 "Search"  : preload("res://Scenes/UI/search.tscn"),
+						 "Saved"   : preload("res://Scenes/UI/saved.tscn"),
+						 "Options" : preload("res://Scenes/UI/options.tscn"),
+						 "Exit"    : null}
 
 @onready var main_title: Label = $Menu/MainTitle
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
@@ -30,12 +30,17 @@ func _ready() -> void:
 	for child in buttons.get_children():
 		if child is Button:
 			child.mouse_entered.connect(func scramble():
+				AudioManager.create_audio(SoundEffect.SOUND_EFFECT_TYPE.HOVER)
 				scramble_text(child, child.name, 50))
 
 			child.pressed.connect(func button_pressed():
 				if transitioning:
 					return
-				_transition_out(menus[child.name].instantiate()))
+				AudioManager.create_audio(SoundEffect.SOUND_EFFECT_TYPE.NEXT)
+				if child.name == "Exit":
+					get_tree().quit()
+				else:
+					_transition_out(menus[child.name].instantiate()))
 
 			# child.disabled = true
 	

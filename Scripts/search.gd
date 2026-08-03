@@ -8,6 +8,7 @@ extends Control
 var regex: RegEx = RegEx.new()
 var is_loading: bool = false
 var search_thread := Thread.new()
+var user_cancelled: bool = false
 const MAX_SEARCH_LENGTH: int = GlobalValues.PAGES * GlobalValues.LINES * GlobalValues.WORDS
 
 signal exiting
@@ -77,6 +78,9 @@ func _on_search_page_pressed() -> void:
 
 
 func _search_process(page_only: bool):
+	if user_cancelled:
+		return
+
 	var search_title = search_title_edit.text
 	if search_title == "":
 		search_title = null
@@ -87,11 +91,14 @@ func _search_process(page_only: bool):
 	else:
 		result = BabelMath.SearchBook(search_text_edit.text, search_title)
 
+	if user_cancelled:
+		return
+
 	call_deferred("_on_search_completed", result)
 
 
 func _on_search_completed(result: Dictionary):
-	if search_thread.is_alive():
+	if search_thread.is_started():
 		search_thread.wait_to_finish()
 	open_book.emit(result, self)
 	_set_loading.call_deferred(false)
@@ -99,4 +106,11 @@ func _on_search_completed(result: Dictionary):
 
 
 func _on_back_button_pressed() -> void:
+	AudioManager.create_audio(SoundEffect.SOUND_EFFECT_TYPE.BACK)
 	exiting.emit(self)
+
+
+func _exit_tree() -> void:
+	if search_thread.is_started():
+		user_cancelled = true
+		search_thread.wait_to_finish()

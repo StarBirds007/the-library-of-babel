@@ -6,7 +6,7 @@ extends BrowsingModule
 @export var selected_font: Font = null
 
 
-var current_book: int:
+var current_book: int = -1:
 	set(value):
 		current_book = value
 		field_selected.emit("book", value)
@@ -14,8 +14,9 @@ var titles: PackedStringArray = []
 var spine_labels: Array[Label] = []
 var required_font_size: int = 0
 
-var retrieval_thread: Thread = null
+var retrieval_thread:= Thread.new()
 var is_loading: bool = false
+var user_cancelled: bool = false
 
 func _ready() -> void:
 	for i in range(shelf.get_child_count()):
@@ -28,6 +29,10 @@ func _ready() -> void:
 
 
 func prepare(address: Dictionary) -> void:
+	if current_book == address["book"]:
+		print("Current book is the same as the new book, no need to fetch titles.")
+		return
+
 	current_book = address["book"]
 
 	step_ready.emit(false)
@@ -36,7 +41,6 @@ func prepare(address: Dictionary) -> void:
 	if retrieval_thread and retrieval_thread.is_started():
 		retrieval_thread.wait_to_finish()
 
-	retrieval_thread = Thread.new()
 	retrieval_thread.start(_fetch_titles.bind(address.duplicate()))
 
 
@@ -62,10 +66,10 @@ func _add_title_labels(button: TextureButton) -> void:
 			else:
 				required_font_size -= 1
 				break
-			print("Current Font Room: ", total_width, " / ", spine_label.size.x)
-			print("FontSizeSelected: ", required_font_size)
+			# print("Current Font Room: ", total_width, " / ", spine_label.size.x)
+			# print("FontSizeSelected: ", required_font_size)
 
-	print(spine_label.size, spine_label.position)
+	# print(spine_label.size, spine_label.position)
 
 	spine_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	spine_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -78,7 +82,11 @@ func _add_title_labels(button: TextureButton) -> void:
 
 
 func _fetch_titles(address: Dictionary) -> void:
+	if user_cancelled:
+		return
 	var result: PackedStringArray = BabelMath.MassTitleRetrieval(address)
+	if user_cancelled:
+		return
 	call_deferred("_on_titles_ready", result)
 
 
@@ -108,7 +116,10 @@ func _on_book_pressed(i: int) -> void:
 	field_selected.emit("book", i)
 	step_ready.emit(true)
 	label.text = "Selected Book: " + str(i + 1) + "\nTitle: " + titles[i]
+	# play_hover_sound()
 
 
-func _exit_tree():
-	pass
+func _exit_tree() -> void:
+	if retrieval_thread.is_started():
+		user_cancelled = true
+		retrieval_thread.wait_to_finish()

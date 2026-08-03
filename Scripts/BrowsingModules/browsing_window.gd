@@ -79,6 +79,8 @@ func _on_field_selected(field_name: String, value: Variant, _step_index: int) ->
 			selected_address[reset_key] = ""
 		else:
 			selected_address[reset_key] = 0
+	
+	steps[current_index]["node"].play_hover_sound()
 
 
 func _on_step_ready(is_ready: bool, step_index: int) -> void:
@@ -96,6 +98,8 @@ func go_next() -> void:
 		steps[current_index]["node"].generate_page(selected_address["page"])
 		return
 
+	AudioManager.create_audio(SoundEffect.SOUND_EFFECT_TYPE.NEXT)
+
 	_enter_step(current_index + 1, true)
 
 
@@ -103,9 +107,12 @@ func go_back() -> void:
 	if is_transitioning:
 		return
 	if current_index <= 0:
+		AudioManager.create_audio(SoundEffect.SOUND_EFFECT_TYPE.BACK)
 		exiting.emit(self)
 		return
 
+	AudioManager.create_audio(SoundEffect.SOUND_EFFECT_TYPE.BACK)
+	print("Going back to step %d" % (current_index - 1))
 	_enter_step(current_index - 1, false)
 
 

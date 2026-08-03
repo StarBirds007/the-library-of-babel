@@ -30,8 +30,9 @@ const random_frame_textures: Array = [
 	preload("res://Assets/Sprite/BookFrameRandom/BookFrameRandom5.png")
 ]
 
-var retrieval_thread: Thread = null
+var retrieval_thread = Thread.new()
 var is_loading: bool = false
+var user_cancelled: bool = false
 
 
 func _ready() -> void:
@@ -40,10 +41,14 @@ func _ready() -> void:
 
 
 func prepare(address: Dictionary):
+	print("Current address: ", stored_address, "\nNew address:     ", address)
+	if address == stored_address:
+		print("Address is the same as current, no need to generate page.")
+		return
 	_create_copyable_address(address)
 	page_number.text = str(address["page"] + 1)
 	current_page = address["page"]
-	stored_address = address
+	stored_address = address.duplicate()
 	generate_page()
 
 
@@ -54,20 +59,26 @@ func generate_page(imported_page: int = -1) -> void:
 		else:
 			current_page = imported_page
 
-	print(current_page)
+	# print(current_page)
 
 	_set_loading(true)
 
 	if retrieval_thread and retrieval_thread.is_started():
 		retrieval_thread.wait_to_finish()
 
-	retrieval_thread = Thread.new()
 	retrieval_thread.start(_generating_process)
 
 
 func _generating_process():
+	if user_cancelled:
+		return
+
 	GlobalValues.debug_time = Time.get_ticks_msec()
 	var result: Dictionary = BabelMath.GetPageAndTitleString(stored_address)
+
+	if user_cancelled:
+		return
+
 	call_deferred("_on_page_retrieved", result)
 
 
@@ -125,8 +136,8 @@ func _create_copyable_address(address: Dictionary):
 		hex_text = address["hex"]
 	elif hex_length <= 22:
 		hex_text = "%s\n%s" % [address["hex"].substr(0, 10), address["hex"].substr(9)]
-		print(address["hex"].substr(0, 10))
-		print(address["hex"].substr(9))
+		# print(address["hex"].substr(0, 10))
+		# print(address["hex"].substr(9))
 	else:
 		hex_text = "%s\n%s..." % [address["hex"].substr(0, 10), address["hex"].substr(9, 12)]
 
@@ -197,3 +208,9 @@ func _on_save_book_pressed() -> void:
 	var temp_dict: Dictionary = stored_address.duplicate()
 	temp_dict["title"] = current_book_title
 	SaveManager.add_address(temp_dict)
+
+
+func _exit_tree() -> void:
+	if retrieval_thread.is_started():
+		user_cancelled = true
+		retrieval_thread.wait_to_finish()
